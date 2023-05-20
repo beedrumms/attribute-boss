@@ -1,0 +1,7 @@
+setuptools
+pandas
+numpy
+regex
+pytest
+pathlib
+importlib.util
