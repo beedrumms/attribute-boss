@@ -5,21 +5,12 @@ import pytest
 import importlib.util
 import numpy as np 
 import pandas as pd
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../src")
+from standardize_attributes import Standardize
+Stz = Standardize()
 
-## ABSOLUTE and RELATIVE IMPORTS NOT WORKING FOR LOCAL PACKAGES
-# from attributeboss.extract_attributes import Extract 
-
-### TEMP SOLUTION FOR TESTING
-temp_path = 'c:/Users/DrummoBre/OneDrive - Government of Ontario/Desktop/SAMS/projects/py_packages/package_zone/AttributeBoss/src/attributeboss/standardize_attributes.py'
-# specify the module that needs to be imported relative to the path of the module
-spec = importlib.util.spec_from_file_location("standardize_attributes", temp_path)
-# create a new module based on spec
-foo = importlib.util.module_from_spec(spec)
-# executes module in its own namespace when modeul is imported or reloaded
-spec.loader.exec_module(foo)
-
-Stz = foo.Standardize()
-###
 
 #%% TEST FUNC
 def test_standardize_address():

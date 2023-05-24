@@ -4,4 +4,3 @@ numpy
 regex
 pytest
 pathlib
-importlib.util

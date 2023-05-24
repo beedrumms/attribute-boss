@@ -4,19 +4,14 @@
 import pytest
 import importlib.util
 
-## ABSOLUTE and RELATIVE IMPORTS NOT WORKING FOR LOCAL PACKAGES
-# from attributeboss.extract_attributes import Extract 
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../src")
 
-### TEMP SOLUTION FOR TESTING
-temp_path = 'c:/Users/DrummoBre/OneDrive - Government of Ontario/Desktop/SAMS/projects/py_packages/package_zone/AttributeBoss/src/attributeboss/extract_attributes.py'
-# specify the module that needs to be imported relative to the path of the module
-spec = importlib.util.spec_from_file_location("extract_attributes", temp_path)
-# create a new module based on spec
-foo = importlib.util.module_from_spec(spec)
-# executes module in its own namespace when modeul is imported or reloaded
-spec.loader.exec_module(foo)
-## Initialize Class in this scope
-Extract = foo.Extract()
+from extract_attributes import Extract
+
+# %%
+Extract = Extract()
 
 #%% 
 def test_extract_address():
@@ -58,5 +53,7 @@ def test_extract_postalcode():
 
 #%% TESTS
 test_extract_address()
+
+# %%
 test_extract_postalcode()
 # %%

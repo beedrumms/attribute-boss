@@ -2,17 +2,13 @@
 import pandas as pd
 import numpy as np
 import regex as re
-## from utils import clean_str (NOT WORKING)
-import importlib.util
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../src")
 
-### TEMP SOLUTION 
-temp_path = 'c:/Users/DrummoBre/OneDrive - Government of Ontario/Desktop/SAMS/projects/py_packages/package_zone/AttributeBoss/src/attributeboss/utils.py'
-# specify the module that needs to be imported relative to the path of the module
-spec = importlib.util.spec_from_file_location("utils", temp_path)
-# create a new module based on spec
-utils = importlib.util.module_from_spec(spec)
-# executes module in its own namespace when modeul is imported or reloaded
-spec.loader.exec_module(utils)
+
+from utils import clean_str 
+
 
 #%%
 class Standardize:
@@ -40,7 +36,7 @@ class Standardize:
                         
                 else: 
 
-                        address = utils.clean_str(_address)
+                        address = clean_str(_address)
 
                         ## ENGLISH
                         address = re.sub(r'\bNORTH\b', 'N', address) # north 
@@ -333,7 +329,7 @@ class Standardize:
                 if province_state == None:
                         prov_state = province_state
                 else:
-                        prov_state = utils.clean_str(province_state)
+                        prov_state = clean_str(province_state)
 
                         prov_state = re.sub(r"\bALABAMA\b", "AL", prov_state)
                         prov_state = re.sub(r"\bALASKA\b", "AK", prov_state)
