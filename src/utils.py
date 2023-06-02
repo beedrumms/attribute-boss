@@ -16,7 +16,10 @@ def missing_val_handler(your_attribute):
         
         """
 
-        return pd.Series(your_attribute).str.upper().replace({"NA":None, '':None, np.nan:None, "NONE":None, "NAN":None})
+        return pd.Series(your_attribute).replace({"NA":None, "Na":None, "nA":None, "na":None,
+                                                  '':None, np.nan:None, 
+                                                  "NONE":None, "none":None, "None":None, 
+                                                  "NAN":None, "NaN":None, "nan":None})
 
 #%%
 def clean_str(your_str, include_accents=False):
