@@ -1,87 +1,91 @@
 ### UNIT TESTS
 
 #%%
+#%% IMPORT PACKAGES
 import pytest
-import importlib.util
-import numpy as np 
+import pytest_spark
 import pandas as pd
-import sys
+
 import os
+import sys
+
 sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../src")
 from standardize_attributes import Standardize
 Stz = Standardize()
 
+sys.path.append(os.path.dirname(os.path.realpath(__file__)))
+from conftests import StandardizeTestingData
+
+df = StandardizeTestingData()
+###
 
 #%% TEST FUNC
-def test_standardize_address():
+def test_standardize_address(df=df):
 
-    test_item = "Queen's Hospital , Suite E3 FLR   5,   Attn to Dr Jarvis, 122-312 JARVIS AVENUE RoaD East, M4r 2P8, "
+    test_1 = Stz.standardize_address(df['Address_actual'])
+    
+    df = df.withColumn('Address_actual', test_1)    
 
-    actual1 = Stz.standardize_address(test_item)  
-    expected1 = "QUEENS HOSPITAL SUITE E3 FLR 5 ATTN TO DR JARVIS 122-312 JARVIS AVE RD E M4R 2P8"   
-    message1 = ("standardize_address ""returned {0} instead ""of {1}".format(actual1, expected1))
+    pd_df = df.toPandas()
 
-    test_item2 = None
+    actual_set =  set(pd_df['Address_actual'])
+    expected_set = set(pd_df['Address_expected'])
+    
+    message = ("\nstandardize_address(address_test) RETURNED: \n{0}\n INSTEAD OF: \n{1}\n".format(sorted(actual_set.difference(expected_set)), sorted(expected_set.difference(actual_set))))
 
-    actual2 = Stz.standardize_address(test_item2)  
-    expected2 = None  
-    message2 = ("standardize_address ""returned {0} instead ""of {1}".format(actual2, expected2))
-
-    assert actual1 == expected1, message1
-    assert actual2 == expected2, message2
+    assert actual_set == expected_set, print(message) # for special formatting to work, message must be printed not just returned
+    ###
     ###
 
 #%% TEsT FUNC
-def test_standardize_postal_code():
+def test_standardize_postal_code(df=df):
+ 
+    test_1 = Stz.standardize_postal_code(df['Postal_actual'])
+    
+    df = df.withColumn('Postal_actual', test_1)    
 
-    test_item1 = r"""Queen's Hospital   Suite E3 FLR 5, Attn to Dr    Jarvis, 122-312
-                    JARVIS AVE RD E, M4r 2P8, """
-    actual1 = Stz.standardize_postal_code(test_item1)  
-    expected1 = r"""Queen's Hospital   Suite E3 FLR 5, Attn to Dr    Jarvis, 122-312
-                    JARVIS AVE RD E, M4R2P8, """   
-    message1 = ("standardize_postal_code ""returned {0} instead ""of {1}".format(actual1, expected1))
+    pd_df = df.toPandas()
 
-    test_item2 = None
-    actual2 = Stz.standardize_postal_code(test_item2)  
-    expected2 = None
-    message2 = ("standardize_postal_code ""returned {0} instead ""of {1}".format(actual2, expected2))
+    actual_set =  set(pd_df['Postal_actual'])
+    expected_set = set(pd_df['Postal_expected'])
+    
+    message = ("\nstandardize_postal_code(postal_test) RETURNED: \n{0}\n INSTEAD OF: \n{1}\n".format(sorted(actual_set.difference(expected_set)), sorted(expected_set.difference(actual_set))))
 
-    assert actual1 == expected1, message1
-    assert actual2 == expected2, message2
+    assert actual_set == expected_set, print(message) 
     ###
 
 #%%
-def test_standardize_phone_number():
+def test_standardize_phone_number(df=df):
 
-    test_item1 = r"910- 345. 1023  "
-    actual1 = Stz.standardize_phone_number(test_item1)  
-    expected1 = r"9103451023"   
-    message1 = ("standardize_phone_number ""returned {0} instead ""of {1}".format(actual1, expected1))
+    test_1 = Stz.standardize_phone_number(df['Phone_actual'])
+    
+    df = df.withColumn('Phone_actual', test_1)    
 
-    test_item2 = None
-    actual2 = Stz.standardize_phone_number(test_item2)  
-    expected2 = None
-    message2 = ("standardize_phone_number ""returned {0} instead ""of {1}".format(actual2, expected2))
+    pd_df = df.toPandas()
 
-    assert actual1 == expected1, message1
-    assert actual2 == expected2, message2
+    actual_set =  set(pd_df['Phone_actual'])
+    expected_set = set(pd_df['Phone_expected'])
+    
+    message = ("\nstandardize_phone_number(Phone_test) RETURNED: \n{0}\n INSTEAD OF: \n{1}\n".format(sorted(actual_set.difference(expected_set)), sorted(expected_set.difference(actual_set))))
+
+    assert actual_set == expected_set, print(message) 
     ###
 
 #%%
-def test_standardize_province_state():
+def test_standardize_province_state(df=df):
+ 
+    test_1 = Stz.standardize_province_state(df['Prov_actual'])
+    
+    df = df.withColumn('Prov_actual', test_1)    
 
-    test_item1 = r"ALABAMA  ALASKA  WISCONSIN   WASHINGTON "
-    actual1 = Stz.standardize_province_state(test_item1)  
-    expected1 = r"AL AK WI WA"   
-    message1 = ("standardize_prov_state ""returned {0} instead ""of {1}".format(actual1, expected1))
+    pd_df = df.toPandas()
 
-    test_item2 = None
-    actual2 = Stz.standardize_province_state(test_item2)  
-    expected2 = None
-    message2 = ("standardize_prov_state ""returned {0} instead ""of {1}".format(actual2, expected2))
+    actual_set =  set(pd_df['Prov_actual'])
+    expected_set = set(pd_df['Prov_expected'])
+    
+    message = ("\nstandardize_province_state(Prov_test) RETURNED: \n{0}\n INSTEAD OF: \n{1}\n".format(sorted(actual_set.difference(expected_set)), sorted(expected_set.difference(actual_set))))
 
-    assert actual1 == expected1, message1
-    assert actual2 == expected2, message2
+    assert actual_set == expected_set, print(message) 
     ###
 
 #%% TESTS
