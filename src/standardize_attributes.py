@@ -2,13 +2,13 @@
 import pandas as pd
 import numpy as np
 import regex as re
-import sys
+
 import os
-sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../src")
+import sys
 
-
-from utils import clean_str 
-
+sys.path.append(os.path.dirname(os.path.realpath(__file__)))
+from features import clean_strs 
+###
 
 #%%
 class Standardize:
@@ -16,249 +16,258 @@ class Standardize:
         def __init__(self):
                 print("Initalized - use list(map(lambda x: function(x), attribute)) to iterate through attribute elements")
 
-        def standardize_address(self, _address):
+        #%%
+        def standardize_address(self, addresses):
+
+                """
+                Converts str to upper,  removes any double+ spaces, hyphens non-ASCII characters, apostrophes, periods, parenthesis, replaces french accents, strips trailing ws
+                
+                ARGS
+                addresses (pd.Series / list) = a pd.Series or list containing address data you want to standardize
+                
+                RETURNS
+                pd.Series 
+
+                NOTES
+                commas are NOT removed
                 
                 """
-                Reconciles and Converts Address Suffix, Prefix, and Street Directions to abbreviated version
-                
-                Args
-                address (str) = a string containing the address
-                
-                returns str with standard conventions
 
-                note 
-                
-                
-                """
+                ixes =  {r"\bNORTH\s?EAST\b": "NE",
+                        r"\bNORTH\s?WEST\b": "NW",
+                        r"\bSOUTH\s?EAST\b": "SE",
+                        r"\bSOUTH\s?WEST\b": "SW",
 
-                if _address == None:
-                        address = _address
-                        
-                else: 
+                        r"\bNORTH\b": "N", # north 
+                        r"\bSOUTH\b": "S", # south 
+                        r"\bEAST\b": "E", # east 
+                        r"\bWEST\b": "W", # west
 
-                        address = clean_str(_address)
+                        r"\b(ALLY|ALLEE|ALLEY|ALLÉE)\b": "ALY",
+                        r"\b(ANNEX|ANNX|ANEX)\b": "ANX",
+                        r"\bARCADE\b": "ARC",
+                        r"\b(AVNUE|AV|AVENU|AVEN|AVN|AVENUE)\b": "AVE",
+                        r"\b(BAYOU|BAYOO|BYU)\b": "BYU",
+                        r"\bBEACH\b": "BCH",
+                        r"\bBEND\b": "BND",
+                        r"\b(BLUF|BLUFF)\b": "BLF",
+                        r"\b(BLUFFS|BLFS)\b": "BLFS",
+                        r"\b(BOT|BOTTOM|BOTTM)\b": "BTM",
+                        r"\b(BOUL|BOULEVARD|BOULV)\b": "BLVD",
+                        r"\b(BRANCH|BRNCH)\b": "BR",
+                        r"\b(BRDGE|BRIDGE)\b": "BRG",
+                        r"\bBROOK\b": "BRK",
+                        r"\b(BROOKS|BRKS)\b": "BRKS",
+                        r"\b(BURG|BG)\b": "BG",
+                        r"\b(BGS|BURGS)\b": "BGS",
+                        r"\b(BYPAS|BYPASS|BYPA|BYPS)\b": "BYP",
+                        r"\b(CAMP|CMP)\b": "CP",
+                        r"\b(CANYN|CNYN|CANYON|CYN)\b": "CYN",
+                        r"\bCAPE\b": "CPE",
+                        r"\b(CAUSEWAY|CAUSWA)\b": "CSWY",
+                        r"\b(CENT|CEN|CNTR|CNTER|CENTER|CENTR|CENTRE)\b": "CTR",
+                        r"\bCHEMIN\b": "CH",
+                        r"\b(CTRS|CENTERS)\b": "CTRS",
+                        r"\b(CRCLE|CRCL|CIRCL|CIRC|CIRCLE)\b": "CIR",
+                        r"\b(CIRCLES|CIRS)\b": "CIRS",
+                        r"\bCLIFF\b": "CLF",
+                        r"\bCLIFFS\b": "CLFS",
+                        r"\bCLUB\b": "CLB",
+                        r"\b(CMN|COMMON)\b": "CMN",
+                        r"\b(CMNS|COMMONS)\b": "CMNS",
+                        r"\bCORNER\b": "COR",
+                        r"\bCORNERS\b": "CORS",
+                        r"\bCOURSE\b": "CRSE",
+                        r"\bCOURT\b": "CT",
+                        r"\bCOURTS\b": "CTS",
+                        r"\bCOVE\b": "CV",
+                        r"\b(COVES|CVS)\b": "CVS",
+                        r"\bCREEK\b": "CRK",
+                        r"\b(CRSNT|CRSENT|CRESCENT)\b": "CRES",
+                        r"\b(CRST|CREST)\b": "CRST",
+                        r"\b(CRSSNG|CROSSING)\b": "XING",
+                        r"\b(XRD|CROSSROAD)\b": "XRD",
+                        r"\b(CROSSROADS|XRDS)\b": "XRDS",
+                        r"\b(CURV|CURVE)\b": "CURV",
+                        r"\bDALE\b": "DL",
+                        r"\bDAM\b": "DM",
+                        r"\b(DVD|DIVIDE|DIV)\b": "DV",
+                        r"\b(DRIVE|DRIV|DRV)\b": "DR",
+                        r"\b(DRS|DRIVES)\b": "DRS",
+                        r"\bESTATE\b": "EST",
+                        r"\bESTATES\b": "ESTS",
+                        r"\b(EXPR|EXPRESSWAY|EXPW|EXPRESS|EXP)\b": "EXPY",
+                        r"\b(EXTENSION|EXTNSN|EXTN)\b": "EXT",
+                        r"\bEXTS\b": "EXTS",
+                        r"\bFALL\b": "FALL",
+                        r"\bFALLS\b": "FLS",
+                        r"\b(FERRY|FRRY)\b": "FRY",
+                        r"\bFIELD\b": "FLD",
+                        r"\bFIELDS\b": "FLDS",
+                        r"\bFLAT\b": "FLT",
+                        r"\bFLATS\b": "FLTS",
+                        r"\bFORD\b": "FRD",
+                        r"\b(FORDS|FRDS)\b": "FRDS",
+                        r"\b(FOREST|FORESTS)\b": "FRST",
+                        r"\b(FORG|FORGE)\b": "FRG",
+                        r"\b(FORGES|FRGS)\b": "FRGS",
+                        r"\bFORK\b": "FRK",
+                        r"\bFORKS\b": "FRKS",
+                        r"\b(FORT|FRT)\b": "FT",
+                        r"\b(FRWY|FREEWAY|FREEWY|FRWAY)\b": "FWY",
+                        r"\b(GRDN|GARDEN|GARDN|GDN|GRDEN)\b": "GDN",
+                        r"\b(GARDENS|GRDNS)\b": "GDNS",
+                        r"\b(GATEWAY|GTWAY|GATEWY|GATWAY)\b": "GTWY",
+                        r"\bGLEN\b": "GLN",
+                        r"\b(GLNS|GLENS)\b": "GLNS",
+                        r"\bGREEN\b": "GRN",
+                        r"\b(GREENS|GRNS)\b": "GRNS",
+                        r"\b(GROV|GROVE)\b": "GRV",
+                        r"\b(GRVS|GROVES)\b": "GRVS",
+                        r"\b(HRBOR|HARBR|HARB|HARBOR)\b": "HBR",
+                        r"\b(HBRS|HARBORS)\b": "HBRS",
+                        r"\bHAVEN\b": "HVN",
+                        r"\bHT\b": "HTS",
+                        r"\b(HIWAY|HIGHWY|HWAY|HIGHWAY|HIWY)\b": "HWY",
+                        r"\bHILL\b": "HL",
+                        r"\bHILLS\b": "HLS",
+                        r"\b(HLLW|HOLWS|HOLLOWS|HOLLOW)\b": "HOLW",
+                        r"\bINLT\b": "INLT",
+                        r"\b(ISLND|ISLAND)\b": "IS",
+                        r"\b(ISLANDS|ISLNDS)\b": "ISS",
+                        r"\bISLES\b": "ISLE",
+                        r"\b(JUNCTN|JUNCTON|JCTN|JUNCTION|JCTION)\b": "JCT",
+                        r"\b(JCTNS|JUNCTIONS)\b": "JCTS",
+                        r"\bKEY\b": "KY",
+                        r"\bKEYS\b": "KYS",
+                        r"\b(KNOLL|KNOL)\b": "KNL",
+                        r"\bKNOLLS\b": "KNLS",
+                        r"\bLAKE\b": "LK",
+                        r"\bLAKES\b": "LKS",
+                        r"\bLAND\b": "LAND",
+                        r"\b(LNDNG|LANDING)\b": "LNDG",
+                        r"\bLANE\b": "LN",
+                        r"\bLIGHT\b": "LGT",
+                        r"\b(LIGHTS|LGTS)\b": "LGTS",
+                        r"\bLOAF\b": "LF",
+                        r"\bLOCK\b": "LCK",
+                        r"\bLOCKS\b": "LCKS",
+                        r"\b(LODGE|LDGE|LODG)\b": "LDG",
+                        r"\bLOOPS\b": "LOOP",
+                        r"\bMALL\b": "MALL",
+                        r"\bMANOR\b": "MNR",
+                        r"\bMANORS\b": "MNRS",
+                        r"\b(MEADOW|MDW)\b": "MDW",
+                        r"\b(MEDOWS|MDW|MEADOWS)\b": "MDWS",
+                        r"\bMEWS\b": "MEWS",
+                        r"\b(MILL|ML)\b": "ML",
+                        r"\b(MLS|MILLS)\b": "MLS",
+                        r"\b(MSN|MSSN|MISSN)\b": "MSN",
+                        r"\b(MTWY|MOTORWAY)\b": "MTWY",
+                        r"\b(MOUNT|MNT)\b": "MT",
+                        r"\b(MNTAIN|MOUNTIN|MOUNTAIN|MNTN|MTIN)\b": "MTN",
+                        r"\b(MNTNS|MOUNTAINS|MTNS)\b": "MTNS",
+                        r"\bNECK\b": "NCK",
+                        r"\b(ORCHARD|ORCHRD)\b": "ORCH",
+                        r"\bOVL\b": "OVAL",
+                        r"\b(OPAS|OVERPASS)\b": "OPAS",
+                        r"\bPRK\b": "PARK",
+                        r"\b(PARKS|PARK)\b": "PARK",
+                        r"\b(PKWAY|PARKWAY|PARKWY|PKY)\b": "PKWY",
+                        r"\b(PARKWAYS|PKWYS|PKWY)\b": "PKWY",
+                        r"\bPASS\b": "PASS",
+                        r"\b(PASSAGE|PSGE)\b": "PSGE",
+                        r"\bPATHS\b": "PATH",
+                        r"\bPIKES\b": "PIKE",
+                        r"\b(PINE|PNE)\b": "PNE",
+                        r"\bPINES\b": "PNES",
+                        r"\bPL\b": "PL",
+                        r"\bPLAIN\b": "PLN",
+                        r"\bPLAINS\b": "PLNS",
+                        r"\b(PLAZA|PLZA)\b": "PLZ",
+                        r"\bPOINT\b": "PT",
+                        r"\bPOINTS\b": "PTS",
+                        r"\bPORT\b": "PRT",
+                        r"\bPORTS\b": "PRTS",
+                        r"\b(PRAIRIE|PRR)\b": "PR",
+                        r"\bPROMENADE\b": "PROM",
+                        r"\b(RAD|RADIEL|RADIAL)\b": "RADL",
+                        r"\bRAMP\b": "RAMP",
+                        r"\b(RNCHS|RANCHES|RANCH)\b": "RNCH",
+                        r"\bRAPID\b": "RPD",
+                        r"\bRAPIDS\b": "RPDS",
+                        r"\bREST\b": "RST",
+                        r"\b(RIDGE|RDGE)\b": "RDG",
+                        r"\bRIDGES\b": "RDGS",
+                        r"\b(RIVER|RVR|RIVR)\b": "RIV",
+                        r"\bROAD\b": "RD",
+                        r"\bROADS\b": "RDS",
+                        r"\b(ROUTE|RTE)\b": "RTE",
+                        r"\bROW\b": "ROW",
+                        r"\bRUE\b": "RUE",
+                        r"\bRUN\b": "RUN",
+                        r"\bSHOAL\b": "SHL",
+                        r"\bSHOALS\b": "SHLS",
+                        r"\b(SHOAR|SHORE)\b": "SHR",
+                        r"\b(SHOARS|SHORES)\b": "SHRS",
+                        r"\b(SKWY|SKYWAY)\b": "SKWY",
+                        r"\b(SPRING|SPNG|SPRNG)\b": "SPG",
+                        r"\b(SPRINGS|SPNGS|SPRNGS)\b": "SPGS",
+                        r"\bSPUR\b": "SPUR",
+                        r"\b(SPUR|SPURS)\b": "SPUR",
+                        r"\b(SQUARE|SQU|SQR|SQRE)\b": "SQ",
+                        r"\b(SQS|SQRS|SQUARES)\b": "SQS",
+                        r"\b(STATN|STN|STATION)\b": "STA",
+                        r"\b(STRAV|STRVN|STRAVENUE|STRVNUE|STRAVN|STRAVEN)\b": "STRA",
+                        r"\b(STREME|STREAM)\b": "STRM",
+                        r"\b(STREET|STR|STRT)\b": "ST",
+                        r"\b(STS|STREETS)\b": "STS",
+                        r"\b(SUMIT|SUMMIT|SUMITT)\b": "SMT",
+                        r"\b(TERRACE|TERR)\b": "TER",
+                        r"\b(THROUGHWAY|TRWY)\b": "TRWY",
+                        r"\b(TRACE|TRACES)\b": "TRCE",
+                        r"\b(TRACK|TRK|TRKS|TRACKS)\b": "TRAK",
+                        r"\b(TRFY|TRAFFICWAY)\b": "TRFY",
+                        r"\b(TRAIL|TRLS|TRAILS)\b": "TRL",
+                        r"\b(TRLRS|TRAILER)\b": "TRLR",
+                        r"\b(TUNNL|TUNLS|TUNNEL|TUNNELS|TUNEL)\b": "TUNL",
+                        r"\b(TPKE|TURNPK|TRNPK|TURNPIKE)\b": "TPKE",
+                        r"\b(UPAS|UNDERPASS)\b": "UPAS",
+                        r"\bUNION\b": "UN",
+                        r"\b(UNIONS|UNS)\b": "UNS",
+                        r"\b(VLLY|VALLY|VALLEY)\b": "VLY",
+                        r"\bVALLEYS\b": "VLYS",
+                        r"\b(VIADCT|VDCT|VIADUCT)\b": "VIA",
+                        r"\bVIEW\b": "VW",
+                        r"\bVIEWS\b": "VWS",
+                        r"\b(VILL|VILLAG|VILLG|VILLAGE|VILLIAGE)\b": "VLG",
+                        r"\bVILLAGES\b": "VLGS",
+                        r"\bVILLE\b": "VL",
+                        r"\b(VSTA|VST|VISTA|VIST)\b": "VIS",
+                        r"\bWALK\b": "WALK",
+                        r"\b(WALK|WALKS)\b": "WALK",
+                        r"\bWALL\b": "WALL",
+                        r"\bWY\b": "WAY",
+                        r"\bWAYS\b": "WAYS",
+                        r"\b(WL|WELL)\b": "WL",
+                        r"\bWELLS\b": "WLS"}
 
-                        ## ENGLISH
-                        address = re.sub(r'\bNORTH\b', 'N', address) # north 
-                        address = re.sub(r'\bSOUTH\b', 'S', address) # south 
-                        address = re.sub(r'\bEAST\b', 'E', address) # east 
-                        address = re.sub(r'\bWEST\b', 'W', address) # west
+                try:
 
-                        address = re.sub(r'\bNORTH\s+EAST\b', 'NE', address)
-                        address = re.sub(r'\bNORTH\s+WEST\b', 'NW', address)
-                        address = re.sub(r'\bSOUTH\s+EAST\b', 'SE', address)
-                        address = re.sub(r'\bSOUTH\s+WEST\b', 'SW', address)
+                        cln = clean_strs(addresses)
+                        stz_addresses = pd.Series(cln).replace(ixes, regex=True)
 
-                        address = re.sub(r"\b(ALLY|ALLEE|ALLEY|ALLÉE)\b", "ALY", address)
-                        address = re.sub(r"\b(ANNEX|ANNX|ANEX)\b", "ANX", address)
-                        address = re.sub(r"\bARCADE\b", "ARC", address)
-                        address = re.sub(r"\b(AVNUE|AV|AVENU|AVEN|AVN|AVENUE)\b", "AVE", address)
-                        address = re.sub(r"\b(BAYOU|BAYOO|BYU)\b", "BYU", address)
-                        address = re.sub(r"\bBEACH\b", "BCH", address)
-                        address = re.sub(r"\bBEND\b", "BND", address)
-                        address = re.sub(r"\b(BLUF|BLUFF)\b", "BLF", address)
-                        address = re.sub(r"\b(BLUFFS|BLFS)\b", "BLFS", address)
-                        address = re.sub(r"\b(BOT|BOTTOM|BOTTM)\b", "BTM", address)
-                        address = re.sub(r"\b(BOUL|BOULEVARD|BOULV)\b", "BLVD", address)
-                        address = re.sub(r"\b(BRANCH|BRNCH)\b", "BR", address)
-                        address = re.sub(r"\b(BRDGE|BRIDGE)\b", "BRG", address)
-                        address = re.sub(r"\bBROOK\b", "BRK", address)
-                        address = re.sub(r"\b(BROOKS|BRKS)\b", "BRKS", address)
-                        address = re.sub(r"\b(BURG|BG)\b", "BG", address)
-                        address = re.sub(r"\b(BGS|BURGS)\b", "BGS", address)
-                        address = re.sub(r"\b(BYPAS|BYPASS|BYPA|BYPS)\b", "BYP", address)
-                        address = re.sub(r"\b(CAMP|CMP)\b", "CP", address)
-                        address = re.sub(r"\b(CANYN|CNYN|CANYON|CYN)\b", "CYN", address)
-                        address = re.sub(r"\bCAPE\b", "CPE", address)
-                        address = re.sub(r"\b(CAUSEWAY|CAUSWA)\b", "CSWY", address)
-                        address = re.sub(r"\b(CENT|CEN|CNTR|CNTER|CENTER|CENTR|CENTRE)\b", "CTR", address)
-                        address = re.sub(r"\bCHEMIN\b", "CH", address)
-                        address = re.sub(r"\b(CTRS|CENTERS)\b", "CTRS", address)
-                        address = re.sub(r"\b(CRCLE|CRCL|CIRCL|CIRC|CIRCLE)\b", "CIR", address)
-                        address = re.sub(r"\b(CIRCLES|CIRS)\b", "CIRS", address)
-                        address = re.sub(r"\bCLIFF\b", "CLF", address)
-                        address = re.sub(r"\bCLIFFS\b", "CLFS", address)
-                        address = re.sub(r"\bCLUB\b", "CLB", address)
-                        address = re.sub(r"\b(CMN|COMMON)\b", "CMN", address)
-                        address = re.sub(r"\b(CMNS|COMMONS)\b", "CMNS", address)
-                        address = re.sub(r"\bCORNER\b", "COR", address)
-                        address = re.sub(r"\bCORNERS\b", "CORS", address)
-                        address = re.sub(r"\bCOURSE\b", "CRSE", address)
-                        address = re.sub(r"\bCOURT\b", "CT", address)
-                        address = re.sub(r"\bCOURTS\b", "CTS", address)
-                        address = re.sub(r"\bCOVE\b", "CV", address)
-                        address = re.sub(r"\b(COVES|CVS)\b", "CVS", address)
-                        address = re.sub(r"\bCREEK\b", "CRK", address)
-                        address = re.sub(r"\b(CRSNT|CRSENT|CRESCENT)\b", "CRES", address)
-                        address = re.sub(r"\b(CRST|CREST)\b", "CRST", address)
-                        address = re.sub(r"\b(CRSSNG|CROSSING)\b", "XING", address)
-                        address = re.sub(r"\b(XRD|CROSSROAD)\b", "XRD", address)
-                        address = re.sub(r"\b(CROSSROADS|XRDS)\b", "XRDS", address)
-                        address = re.sub(r"\b(CURV|CURVE)\b", "CURV", address)
-                        address = re.sub(r"\bDALE\b", "DL", address)
-                        address = re.sub(r"\bDAM\b", "DM", address)
-                        address = re.sub(r"\b(DVD|DIVIDE|DIV)\b", "DV", address)
-                        address = re.sub(r"\b(DRIVE|DRIV|DRV)\b", "DR", address)
-                        address = re.sub(r"\b(DRS|DRIVES)\b", "DRS", address)
-                        address = re.sub(r"\bESTATE\b", "EST", address)
-                        address = re.sub(r"\bESTATES\b", "ESTS", address)
-                        address = re.sub(r"\b(EXPR|EXPRESSWAY|EXPW|EXPRESS|EXP)\b", "EXPY", address)
-                        address = re.sub(r"\b(EXTENSION|EXTNSN|EXTN)\b", "EXT", address)
-                        address = re.sub(r"\bEXTS\b", "EXTS", address)
-                        address = re.sub(r"\bFALL\b", "FALL", address)
-                        address = re.sub(r"\bFALLS\b", "FLS", address)
-                        address = re.sub(r"\b(FERRY|FRRY)\b", "FRY", address)
-                        address = re.sub(r"\bFIELD\b", "FLD", address)
-                        address = re.sub(r"\bFIELDS\b", "FLDS", address)
-                        address = re.sub(r"\bFLAT\b", "FLT", address)
-                        address = re.sub(r"\bFLATS\b", "FLTS", address)
-                        address = re.sub(r"\bFORD\b", "FRD", address)
-                        address = re.sub(r"\b(FORDS|FRDS)\b", "FRDS", address)
-                        address = re.sub(r"\b(FOREST|FORESTS)\b", "FRST", address)
-                        address = re.sub(r"\b(FORG|FORGE)\b", "FRG", address)
-                        address = re.sub(r"\b(FORGES|FRGS)\b", "FRGS", address)
-                        address = re.sub(r"\bFORK\b", "FRK", address)
-                        address = re.sub(r"\bFORKS\b", "FRKS", address)
-                        address = re.sub(r"\b(FORT|FRT)\b", "FT", address)
-                        address = re.sub(r"\b(FRWY|FREEWAY|FREEWY|FRWAY)\b", "FWY", address)
-                        address = re.sub(r"\b(GRDN|GARDEN|GARDN|GDN|GRDEN)\b", "GDN", address)
-                        address = re.sub(r"\b(GARDENS|GRDNS)\b", "GDNS", address)
-                        address = re.sub(r"\b(GATEWAY|GTWAY|GATEWY|GATWAY)\b", "GTWY", address)
-                        address = re.sub(r"\bGLEN\b", "GLN", address)
-                        address = re.sub(r"\b(GLNS|GLENS)\b", "GLNS", address)
-                        address = re.sub(r"\bGREEN\b", "GRN", address)
-                        address = re.sub(r"\b(GREENS|GRNS)\b", "GRNS", address)
-                        address = re.sub(r"\b(GROV|GROVE)\b", "GRV", address)
-                        address = re.sub(r"\b(GRVS|GROVES)\b", "GRVS", address)
-                        address = re.sub(r"\b(HRBOR|HARBR|HARB|HARBOR)\b", "HBR", address)
-                        address = re.sub(r"\b(HBRS|HARBORS)\b", "HBRS", address)
-                        address = re.sub(r"\bHAVEN\b", "HVN", address)
-                        address = re.sub(r"\bHT\b", "HTS", address)
-                        address = re.sub(r"\b(HIWAY|HIGHWY|HWAY|HIGHWAY|HIWY)\b", "HWY", address)
-                        address = re.sub(r"\bHILL\b", "HL", address)
-                        address = re.sub(r"\bHILLS\b", "HLS", address)
-                        address = re.sub(r"\b(HLLW|HOLWS|HOLLOWS|HOLLOW)\b", "HOLW", address)
-                        address = re.sub(r"\bINLT\b", "INLT", address)
-                        address = re.sub(r"\b(ISLND|ISLAND)\b", "IS", address)
-                        address = re.sub(r"\b(ISLANDS|ISLNDS)\b", "ISS", address)
-                        address = re.sub(r"\bISLES\b", "ISLE", address)
-                        address = re.sub(r"\b(JUNCTN|JUNCTON|JCTN|JUNCTION|JCTION)\b", "JCT", address)
-                        address = re.sub(r"\b(JCTNS|JUNCTIONS)\b", "JCTS", address)
-                        address = re.sub(r"\bKEY\b", "KY", address)
-                        address = re.sub(r"\bKEYS\b", "KYS", address)
-                        address = re.sub(r"\b(KNOLL|KNOL)\b", "KNL", address)
-                        address = re.sub(r"\bKNOLLS\b", "KNLS", address)
-                        address = re.sub(r"\bLAKE\b", "LK", address)
-                        address = re.sub(r"\bLAKES\b", "LKS", address)
-                        address = re.sub(r"\bLAND\b", "LAND", address)
-                        address = re.sub(r"\b(LNDNG|LANDING)\b", "LNDG", address)
-                        address = re.sub(r"\bLANE\b", "LN", address)
-                        address = re.sub(r"\bLIGHT\b", "LGT", address)
-                        address = re.sub(r"\b(LIGHTS|LGTS)\b", "LGTS", address)
-                        address = re.sub(r"\bLOAF\b", "LF", address)
-                        address = re.sub(r"\bLOCK\b", "LCK", address)
-                        address = re.sub(r"\bLOCKS\b", "LCKS", address)
-                        address = re.sub(r"\b(LODGE|LDGE|LODG)\b", "LDG", address)
-                        address = re.sub(r"\bLOOPS\b", "LOOP", address)
-                        address = re.sub(r"\bMALL\b", "MALL", address)
-                        address = re.sub(r"\bMANOR\b", "MNR", address)
-                        address = re.sub(r"\bMANORS\b", "MNRS", address)
-                        address = re.sub(r"\b(MEADOW|MDW)\b", "MDW", address)
-                        address = re.sub(r"\b(MEDOWS|MDW|MEADOWS)\b", "MDWS", address)
-                        address = re.sub(r"\bMEWS\b", "MEWS", address)
-                        address = re.sub(r"\b(MILL|ML)\b", "ML", address)
-                        address = re.sub(r"\b(MLS|MILLS)\b", "MLS", address)
-                        address = re.sub(r"\b(MSN|MSSN|MISSN)\b", "MSN", address)
-                        address = re.sub(r"\b(MTWY|MOTORWAY)\b", "MTWY", address)
-                        address = re.sub(r"\b(MOUNT|MNT)\b", "MT", address)
-                        address = re.sub(r"\b(MNTAIN|MOUNTIN|MOUNTAIN|MNTN|MTIN)\b", "MTN", address)
-                        address = re.sub(r"\b(MNTNS|MOUNTAINS|MTNS)\b", "MTNS", address)
-                        address = re.sub(r"\bNECK\b", "NCK", address)
-                        address = re.sub(r"\b(ORCHARD|ORCHRD)\b", "ORCH", address)
-                        address = re.sub(r"\bOVL\b", "OVAL", address)
-                        address = re.sub(r"\b(OPAS|OVERPASS)\b", "OPAS", address)
-                        address = re.sub(r"\bPRK\b", "PARK", address)
-                        address = re.sub(r"\b(PARKS|PARK)\b", "PARK", address)
-                        address = re.sub(r"\b(PKWAY|PARKWAY|PARKWY|PKY)\b", "PKWY", address)
-                        address = re.sub(r"\b(PARKWAYS|PKWYS|PKWY)\b", "PKWY", address)
-                        address = re.sub(r"\bPASS\b", "PASS", address)
-                        address = re.sub(r"\b(PASSAGE|PSGE)\b", "PSGE", address)
-                        address = re.sub(r"\bPATHS\b", "PATH", address)
-                        address = re.sub(r"\bPIKES\b", "PIKE", address)
-                        address = re.sub(r"\b(PINE|PNE)\b", "PNE", address)
-                        address = re.sub(r"\bPINES\b", "PNES", address)
-                        address = re.sub(r"\bPL\b", "PL", address)
-                        address = re.sub(r"\bPLAIN\b", "PLN", address)
-                        address = re.sub(r"\bPLAINS\b", "PLNS", address)
-                        address = re.sub(r"\b(PLAZA|PLZA)\b", "PLZ", address)
-                        address = re.sub(r"\bPOINT\b", "PT", address)
-                        address = re.sub(r"\bPOINTS\b", "PTS", address)
-                        address = re.sub(r"\bPORT\b", "PRT", address)
-                        address = re.sub(r"\bPORTS\b", "PRTS", address)
-                        address = re.sub(r"\b(PRAIRIE|PRR)\b", "PR", address)
-                        address = re.sub(r"\bPROMENADE\b", "PROM", address)
-                        address = re.sub(r"\b(RAD|RADIEL|RADIAL)\b", "RADL", address)
-                        address = re.sub(r"\bRAMP\b", "RAMP", address)
-                        address = re.sub(r"\b(RNCHS|RANCHES|RANCH)\b", "RNCH", address)
-                        address = re.sub(r"\bRAPID\b", "RPD", address)
-                        address = re.sub(r"\bRAPIDS\b", "RPDS", address)
-                        address = re.sub(r"\bREST\b", "RST", address)
-                        address = re.sub(r"\b(RIDGE|RDGE)\b", "RDG", address)
-                        address = re.sub(r"\bRIDGES\b", "RDGS", address)
-                        address = re.sub(r"\b(RIVER|RVR|RIVR)\b", "RIV", address)
-                        address = re.sub(r"\bROAD\b", "RD", address)
-                        address = re.sub(r"\bROADS\b", "RDS", address)
-                        address = re.sub(r"\b(ROUTE|RTE)\b", "RTE", address)
-                        address = re.sub(r"\bROW\b", "ROW", address)
-                        address = re.sub(r"\bRUE\b", "RUE", address)
-                        address = re.sub(r"\bRUN\b", "RUN", address)
-                        address = re.sub(r"\bSHOAL\b", "SHL", address)
-                        address = re.sub(r"\bSHOALS\b", "SHLS", address)
-                        address = re.sub(r"\b(SHOAR|SHORE)\b", "SHR", address)
-                        address = re.sub(r"\b(SHOARS|SHORES)\b", "SHRS", address)
-                        address = re.sub(r"\b(SKWY|SKYWAY)\b", "SKWY", address)
-                        address = re.sub(r"\b(SPRING|SPNG|SPRNG)\b", "SPG", address)
-                        address = re.sub(r"\b(SPRINGS|SPNGS|SPRNGS)\b", "SPGS", address)
-                        address = re.sub(r"\bSPUR\b", "SPUR", address)
-                        address = re.sub(r"\b(SPUR|SPURS)\b", "SPUR", address)
-                        address = re.sub(r"\b(SQUARE|SQU|SQR|SQRE)\b", "SQ", address)
-                        address = re.sub(r"\b(SQS|SQRS|SQUARES)\b", "SQS", address)
-                        address = re.sub(r"\b(STATN|STN|STATION)\b", "STA", address)
-                        address = re.sub(r"\b(STRAV|STRVN|STRAVENUE|STRVNUE|STRAVN|STRAVEN)\b", "STRA", address)
-                        address = re.sub(r"\b(STREME|STREAM)\b", "STRM", address)
-                        address = re.sub(r"\b(STREET|STR|STRT)\b", "ST", address)
-                        address = re.sub(r"\b(STS|STREETS)\b", "STS", address)
-                        address = re.sub(r"\b(SUMIT|SUMMIT|SUMITT)\b", "SMT", address)
-                        address = re.sub(r"\b(TERRACE|TERR)\b", "TER", address)
-                        address = re.sub(r"\b(THROUGHWAY|TRWY)\b", "TRWY", address)
-                        address = re.sub(r"\b(TRACE|TRACES)\b", "TRCE", address)
-                        address = re.sub(r"\b(TRACK|TRK|TRKS|TRACKS)\b", "TRAK", address)
-                        address = re.sub(r"\b(TRFY|TRAFFICWAY)\b", "TRFY", address)
-                        address = re.sub(r"\b(TRAIL|TRLS|TRAILS)\b", "TRL", address)
-                        address = re.sub(r"\b(TRLRS|TRAILER)\b", "TRLR", address)
-                        address = re.sub(r"\b(TUNNL|TUNLS|TUNNEL|TUNNELS|TUNEL)\b", "TUNL", address)
-                        address = re.sub(r"\b(TPKE|TURNPK|TRNPK|TURNPIKE)\b", "TPKE", address)
-                        address = re.sub(r"\b(UPAS|UNDERPASS)\b", "UPAS", address)
-                        address = re.sub(r"\bUNION\b", "UN", address)
-                        address = re.sub(r"\b(UNIONS|UNS)\b", "UNS", address)
-                        address = re.sub(r"\b(VLLY|VALLY|VALLEY)\b", "VLY", address)
-                        address = re.sub(r"\bVALLEYS\b", "VLYS", address)
-                        address = re.sub(r"\b(VIADCT|VDCT|VIADUCT)\b", "VIA", address)
-                        address = re.sub(r"\bVIEW\b", "VW", address)
-                        address = re.sub(r"\bVIEWS\b", "VWS", address)
-                        address = re.sub(r"\b(VILL|VILLAG|VILLG|VILLAGE|VILLIAGE)\b", "VLG", address)
-                        address = re.sub(r"\bVILLAGES\b", "VLGS", address)
-                        address = re.sub(r"\bVILLE\b", "VL", address)
-                        address = re.sub(r"\b(VSTA|VST|VISTA|VIST)\b", "VIS", address)
-                        address = re.sub(r"\bWALK\b", "WALK", address)
-                        address = re.sub(r"\b(WALK|WALKS)\b", "WALK", address)
-                        address = re.sub(r"\bWALL\b", "WALL", address)
-                        address = re.sub(r"\bWY\b", "WAY", address)
-                        address = re.sub(r"\bWAYS\b", "WAYS", address)
-                        address = re.sub(r"\b(WL|WELL)\b", "WL", address)
-                        address = re.sub(r"\bWELLS\b", "WLS", address)
-                
-                return address
+                        return stz_addresses
+
+                except AttributeError as e: 
+
+                        print("Missing required argument or incorrect data struct given for arg *address*", "\n", "see func.__doc__ for more information on use", "\n",  str(e))
+                        raise
+
+                except TypeError as e:
+
+                        print("Incorrect data given for arg *address*", "\n", "see func.__doc__ for more information on use", "\n",  str(e))
+                        raise
 
         #%%
 
@@ -274,26 +283,26 @@ class Standardize:
                 
                 """
 
-                if postal == None:
-                        code = postal
+                patterns = {r"\.|-|_": "", r"\s{1,}|\n{1,}": "", r"": None}
 
-                else: 
+                try:
+                        codes = pd.Series(postal).replace(patterns, regex=True)
+                        codes = codes.str.upper().str.strip()
                         
-                        m = re.findall(r"\b[A-Za-z]\d[A-Za-z]\s?-?\d[A-Za-z]\d\b", str(postal))
+                        return codes
 
-                        if m:
-                                p = re.sub(r'\s*', '', m[0])
-                                p = re.sub(r'[.\\-_]', '', p)
-                                pp = p.upper().strip()
-                                code = re.sub(r"\b[A-Za-z]\d[A-Za-z](\s?|-{1})\d[A-Za-z]\d\b", fr"{pp}", postal)
-                        else:
-                                code = postal
+                except AttributeError as e: 
 
-                return code
+                        print("Missing required argument or incorrect data struct given for arg *postal*", "\n", "see func.__doc__ for more information on use", "\n",  str(e))
+                        raise
+
+                except TypeError as e:
+
+                        print("Incorrect data given for arg *postal*", "\n", "see func.__doc__ for more information on use", "\n",  str(e))
+                        raise
 
         #%% 
-
-        def standardize_phone_number(self, number):
+        def standardize_phone_number(self, phone_number):
                 
                 """
                 Standardize phone numbers
@@ -304,14 +313,22 @@ class Standardize:
                 returns str with clean telephone num
                 
                 """
+                patterns = {r'\s*|\n*': '', r'\.|\s*|-|_|\n*': '', r'\(|\)':"", r"":None}
 
-                if number == None:
-                        num = number
-                else:
-                        num = re.sub(r'\s*|\n*', '', str(number))
-                        num = re.sub(r'\.|\s*|-|_|\n*', '', num)
+                try:
+                        num = pd.Series(phone_number).replace(patterns, regex=True)
+                        num = num.str.upper().str.strip()
+                        return num
 
-                return num
+                except AttributeError as e: 
+
+                        print("Missing required argument or incorrect data struct given for arg *phone_number*", "\n", "see func.__doc__ for more information on use", "\n",  str(e))
+                        raise
+
+                except TypeError as e:
+
+                        print("Incorrect data given for arg *phone_number*", "\n", "see func.__doc__ for more information on use", "\n",  str(e))
+                        raise
 
         # %%
         def standardize_province_state(self, province_state):
@@ -325,93 +342,101 @@ class Standardize:
                 cleaned string with the short form of the province or states title
                 
                 """
+                patterns = {    r"\bALABAMA\b": "AL",
+                                r"\bALASKA\b": "AK", 
+                                r"\bAMERICAN SAMOA\b": "AS", 
+                                r"\bARIZONA\b": "AZ", 
+                                r"\bARKANSAS\b": "AR", 
+                                r"\bARMED FORCES AFRICA\b": "AE", 
+                                r"\bARMED FORCES AMERICA\b": "AA", 
+                                r"\bARMED FORCES CANADA\b": "AE", 
+                                r"\bARMED FORCES EUROPE\b": "AE", 
+                                r"\bARMED FORCES MIDDLE EAST\b": "AE", 
+                                r"\bARMED FORCES PACIFIC\b": "AP", 
+                                r"\bCALIFORNIA\b": "CA", 
+                                r"\bCOLORADO\b": "CO", 
+                                r"\bCONNETICUT\b": "CT", 
+                                r"\bDELAWARE\b": "DE", 
+                                r"\bDISTRICT OF COLUMBIA\b": "DC", 
+                                r"\bFLORIDA\b": "FL", 
+                                r"\bGEORGIA\b": "GA", 
+                                r"\bGUAM\b": "GU", 
+                                r"\bHAWAII\b": "HI", 
+                                r"\bIDAHO\b": "ID", 
+                                r"\bILLINOIS\b": "IL", 
+                                r"\bINDIANA\b": "IN", 
+                                r"\bIOWA\b": "IA", 
+                                r"\bKANSAS\b": "KS", 
+                                r"\bKENTUCKY\b": "KY", 
+                                r"\bLOUISIANA\b": "LA", 
+                                r"\bMAINE\b": "ME", 
+                                r"\bMARSHALL ISLANDS\b": "MH", 
+                                r"\bMARYLAND\b": "MD", 
+                                r"\bMASSACHUSETTS\b": "MA", 
+                                r"\bMICHIGAN\b": "MI", 
+                                r"\bMICRONESIA\b": "FM", 
+                                r"\bMINNESOTA\b": "MN", 
+                                r"\bMINOR OUTLYING ISLANDS\b": "UM", 
+                                r"\bMISSISSIPPI\b": "MS", 
+                                r"\bMONTANA\b": "MT", 
+                                r"\bNEBRASKA\b": "NE", 
+                                r"\bNEVADA\b": "NV", 
+                                r"\bNEW HAMPSHIRE\b": "NH", 
+                                r"\bNEW JERSEY\b": "NJ", 
+                                r"\bNEW MEXICO\b": "NM", 
+                                r"\bNEW YORK\b": "NY", 
+                                r"\bNORTH CAROLINA\b": "NC", 
+                                r"\bNORTH DAKOTA\b": "ND", 
+                                r"\bNORTHERN MARIANA ISLANDS\b": "MP", 
+                                r"\bOHIO\b": "OH", 
+                                r"\bOKLAHOMA\b": "OK", 
+                                r"\bOREGON\b": "OR", 
+                                r"\bPALAU\b": "PW", 
+                                r"\bPENNSLYVANIA\b": "PA", 
+                                r"\bPUERTO RICO\b": "PR", 
+                                r"\bRHODE ISLAND\b": "RI", 
+                                r"\bSOUTH CAROLINA\b": "SC", 
+                                r"\bSOUTH DAKOTA\b": "SD", 
+                                r"\bTENNESSEE\b": "TN", 
+                                r"\bTEXAS\b": "TX", 
+                                r"\bUTAH\b": "UT", 
+                                r"\bVERMONT\b": "VT", 
+                                r"\bVIRGINIA\b": "VA", 
+                                r"\bVIRGIN ISLANDS\b": "VI", 
+                                r"\bWASHINGTON\b": "WA", 
+                                r"\bWEST VIRGINIA\b": "WV", 
+                                r"\bWISCONSIN\b": "WI", 
+                                r"\bWYOMING\b": "WY", 
+                                r"\bALBERTA\b": "AB", 
+                                r"\bBRITISH COLUMBIA\b": "BC", 
+                                r"\bMANITOBA\b": "MB", 
+                                r"\bNEW BRUNSWICK\b": "NB", 
+                                r"\bNEWFOUNDLAND AND LABRADOR\b": "NL", 
+                                r"\bNORTHWEST TERRITORIES\b": "NT", 
+                                r"\bNOVA SCOTIA\b": "NS", 
+                                r"\bNUNAVUT\b": "NU", 
+                                r"\bONTARIO\b|\bONT\b": "ON", 
+                                r"\bPRINCE EDWARD ISLAND\b": "PE", 
+                                r"\bQUEBEC\b": "QC", 
+                                r"\bSASKATCHEWAN\b": "SK", 
+                                r"\bYUKON\b": "YT"} 
 
-                if province_state == None:
-                        prov_state = province_state
-                else:
-                        prov_state = clean_str(province_state)
+                try:
 
-                        prov_state = re.sub(r"\bALABAMA\b", "AL", prov_state)
-                        prov_state = re.sub(r"\bALASKA\b", "AK", prov_state)
-                        prov_state = re.sub(r"\bAMERICAN SAMOA\b", "AS", prov_state)
-                        prov_state = re.sub(r"\bARIZONA\b", "AZ", prov_state)
-                        prov_state = re.sub(r"\bARKANSAS\b", "AR", prov_state)
-                        prov_state = re.sub(r"\bARMED FORCES AFRICA\b", "AE", prov_state)
-                        prov_state = re.sub(r"\bARMED FORCES AMERICA\b", "AA", prov_state)
-                        prov_state = re.sub(r"\bARMED FORCES CANADA\b", "AE", prov_state)
-                        prov_state = re.sub(r"\bARMED FORCES EUROPE\b", "AE", prov_state)
-                        prov_state = re.sub(r"\bARMED FORCES MIDDLE EAST\b", "AE", prov_state)
-                        prov_state = re.sub(r"\bARMED FORCES PACIFIC\b", "AP", prov_state)
-                        prov_state = re.sub(r"\bCALIFORNIA\b", "CA", prov_state)
-                        prov_state = re.sub(r"\bCOLORADO\b", "CO", prov_state)
-                        prov_state = re.sub(r"\bCONNETICUT\b", "CT", prov_state)
-                        prov_state = re.sub(r"\bDELAWARE\b", "DE", prov_state)
-                        prov_state = re.sub(r"\bDISTRICT OF COLUMBIA\b", "DC", prov_state)
-                        prov_state = re.sub(r"\bFLORIDA\b", "FL", prov_state)
-                        prov_state = re.sub(r"\bGEORGIA\b", "GA", prov_state)
-                        prov_state = re.sub(r"\bGUAM\b", "GU", prov_state)
-                        prov_state = re.sub(r"\bHAWAII\b", "HI", prov_state)
-                        prov_state = re.sub(r"\bIDAHO\b", "ID", prov_state)
-                        prov_state = re.sub(r"\bILLINOIS\b", "IL", prov_state)
-                        prov_state = re.sub(r"\bINDIANA\b", "IN", prov_state)
-                        prov_state = re.sub(r"\bIOWA\b", "IA", prov_state)
-                        prov_state = re.sub(r"\bKANSAS\b", "KS", prov_state)
-                        prov_state = re.sub(r"\bKENTUCKY\b", "KY", prov_state)
-                        prov_state = re.sub(r"\bLOUISIANA\b", "LA", prov_state)
-                        prov_state = re.sub(r"\bMAINE\b", "ME", prov_state)
-                        prov_state = re.sub(r"\bMARSHALL ISLANDS\b", "MH", prov_state)
-                        prov_state = re.sub(r"\bMARYLAND\b", "MD", prov_state)
-                        prov_state = re.sub(r"\bMASSACHUSETTS\b", "MA", prov_state)
-                        prov_state = re.sub(r"\bMICHIGAN\b", "MI", prov_state)
-                        prov_state = re.sub(r"\bMICRONESIA\b", "FM", prov_state)
-                        prov_state = re.sub(r"\bMINNESOTA\b", "MN", prov_state)
-                        prov_state = re.sub(r"\bMINOR OUTLYING ISLANDS\b", "UM", prov_state)
-                        prov_state = re.sub(r"\bMISSISSIPPI\b", "MS", prov_state)
-                        prov_state = re.sub(r"\bMONTANA\b", "MT", prov_state)
-                        prov_state = re.sub(r"\bNEBRASKA\b", "NE", prov_state)
-                        prov_state = re.sub(r"\bNEVADA\b", "NV", prov_state)
-                        prov_state = re.sub(r"\bNEW HAMPSHIRE\b", "NH", prov_state)
-                        prov_state = re.sub(r"\bNEW JERSEY\b", "NJ", prov_state)
-                        prov_state = re.sub(r"\bNEW MEXICO\b", "NM", prov_state)
-                        prov_state = re.sub(r"\bNEW YORK\b", "NY", prov_state)
-                        prov_state = re.sub(r"\bNORTH CAROLINA\b", "NC", prov_state)
-                        prov_state = re.sub(r"\bNORTH DAKOTA\b", "ND", prov_state)
-                        prov_state = re.sub(r"\bNORTHERN MARIANA ISLANDS\b", "MP", prov_state)
-                        prov_state = re.sub(r"\bOHIO\b", "OH", prov_state)
-                        prov_state = re.sub(r"\bOKLAHOMA\b", "OK", prov_state)
-                        prov_state = re.sub(r"\bOREGON\b", "OR", prov_state)
-                        prov_state = re.sub(r"\bPALAU\b", "PW", prov_state)
-                        prov_state = re.sub(r"\bPENNSLYVANIA\b", "PA", prov_state)
-                        prov_state = re.sub(r"\bPUERTO RICO\b", "PR", prov_state)
-                        prov_state = re.sub(r"\bRHODE ISLAND\b", "RI", prov_state)
-                        prov_state = re.sub(r"\bSOUTH CAROLINA\b", "SC", prov_state)
-                        prov_state = re.sub(r"\bSOUTH DAKOTA\b", "SD", prov_state)
-                        prov_state = re.sub(r"\bTENNESSEE\b", "TN", prov_state)
-                        prov_state = re.sub(r"\bTEXAS\b", "TX", prov_state)
-                        prov_state = re.sub(r"\bUTAH\b", "UT", prov_state)
-                        prov_state = re.sub(r"\bVERMONT\b", "VT", prov_state)
-                        prov_state = re.sub(r"\bVIRGINIA\b", "VA", prov_state)
-                        prov_state = re.sub(r"\bVIRGIN ISLANDS\b", "VI", prov_state)
-                        prov_state = re.sub(r"\bWASHINGTON\b", "WA", prov_state)
-                        prov_state = re.sub(r"\bWEST VIRGINIA\b", "WV", prov_state)
-                        prov_state = re.sub(r"\bWISCONSIN\b", "WI", prov_state)
-                        prov_state = re.sub(r"\bWYOMING\b", "WY", prov_state)
-                        prov_state = re.sub(r"\bALBERTA\b", "AB", prov_state)
-                        prov_state = re.sub(r"\bBRITISH COLUMBIA\b", "BC", prov_state)
-                        prov_state = re.sub(r"\bMANITOBA\b", "MB", prov_state)
-                        prov_state = re.sub(r"\bNEW BRUNSWICK\b", "NB", prov_state)
-                        prov_state = re.sub(r"\bNEWFOUNDLAND AND LABRADOR\b", "NL", prov_state)
-                        prov_state = re.sub(r"\bNORTHWEST TERRITORIES\b", "NT", prov_state)
-                        prov_state = re.sub(r"\bNOVA SCOTIA\b", "NS", prov_state)
-                        prov_state = re.sub(r"\bPROVINCE OR TERRITORY\b", "Abbreviation", prov_state)
-                        prov_state = re.sub(r"\bNUNAVUT\b", "NU", prov_state)
-                        prov_state = re.sub(r"\bONTARIO\b", "ON", prov_state)
-                        prov_state = re.sub(r"\bPRINCE EDWARD ISLAND\b", "PE", prov_state)
-                        prov_state = re.sub(r"\bQUEBEC\b", "QC", prov_state)
-                        prov_state = re.sub(r"\bSASKATCHEWAN\b", "SK", prov_state)
-                        prov_state = re.sub(r"\bYUKON\b", "YT", prov_state)
+                        cln = clean_strs(province_state)
+                        prov_state = pd.Series(cln).replace(patterns, regex=True)        
 
-                return prov_state
+                        return prov_state
+
+                except AttributeError as e: 
+
+                        print("Missing required argument or incorrect data struct given for arg *prov_state*", "\n", "see func.__doc__ for more information on use", "\n",  str(e))
+                        raise
+
+                except TypeError as e:
+
+                        print("Incorrect data given for arg *prov_state*", "\n", "see func.__doc__ for more information on use", "\n",  str(e))
+                        raise
 
 
 # %%

@@ -4,56 +4,59 @@
 import pytest
 import importlib.util
 
-import sys
 import os
+import sys
+
 sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../src")
-
 from extract_attributes import Extract
-
-# %%
 Extract = Extract()
 
+sys.path.append(os.path.dirname(os.path.realpath(__file__)))
+from conftests import ExtractTestingData
+df = ExtractTestingData()
+
 #%% 
-def test_extract_address():
+def test_extract_address(df=df):
 
-    test_item1 = ["Queen's Hospital , Suite E3 FLR 5, Attn to Dr Jarvis, 122-312 JARVIS AVE RD E, M4r 2P8, "]
+    test_1 = Extract.extract_address(df['actual'])
 
-    actual1 = Extract.extract_address(test_item1)  
-    expected1 = ["312 JARVIS AVE RD E"]   
-    message1 = ("extract_address ""returned {0} instead ""of {1}".format(actual1, expected1))
+    actual_set =  set(test_1)
+    expected_set = set(df['Address_expected'])
+    
+    message = ("\nextract_address(address_test) RETURNED: \n{0}\n INSTEAD OF: \n{1}\n".format(sorted(actual_set.difference(expected_set)), sorted(expected_set.difference(actual_set))))
 
-    test_item2 = [None]
-
-    actual2 = Extract.extract_address(test_item2)  
-    expected2 = [None]  
-    message2 = ("extract_address ""returned {0} instead ""of {1}".format(actual2, expected2))
-
-    assert actual1 == expected1, message1
-    assert actual2 == expected2, message2
+    assert actual_set == expected_set, print(message) # for special formatting to work, message must be printed not just returned
+    ###
 
 #%%
-def test_extract_postalcode():
+def test_extract_postal_code(df=df):
 
-    test_item = ["Queen's Hospital , Suite E3 FLR 5, Attn to Dr Jarvis, 122-312 JARVIS AVE RD E, M4R2P8, 90234"]
+    test_1 = Extract.extract_postal_code(df['actual'])
+    
+    actual_set =  set(test_1)
+    expected_set = set(df['Postal_expected'])
+    
+    message = ("\nextract_postal_code(Postal_test) RETURNED: \n{0}\n INSTEAD OF: \n{1}\n".format(sorted(actual_set.difference(expected_set)), sorted(expected_set.difference(actual_set))))
 
-    actual = Extract.extract_postalcode(test_item)  
-    expected = ["M4R2P8"]   
-    message = ("extract_address ""returned {0} instead ""of {1}".format(actual, expected))
+    assert actual_set == expected_set, print(message) # for special formatting to work, message must be printed not just returned
+    ###
 
+#%%
+def test_extract_phone_number(df=df):
 
-    test_item2 = [None] # if function is fed a None value - it is to return None
+    test_1 = Extract.extract_phone_number(df['actual'])
 
-    actual2 = Extract.extract_postalcode(test_item2)  
-    expected2 = [None]   
-    message2 = ("extract_address ""returned {0} instead ""of {1}".format(actual2, expected2))
+    actual_set =  set(test_1)
+    expected_set = set(df['Phone_expected'])
+    
+    message = ("\nextract_phone_number(phone_test) RETURNED: \n{0}\n INSTEAD OF: \n{1}\n".format(actual_set.difference(expected_set), expected_set.difference(actual_set)))
 
-    assert actual == expected, message
-    assert actual2 == expected2, message2
-
+    assert actual_set == expected_set, print(message) # for special formatting to work, message must be printed not just returned
+    ###
 
 #%% TESTS
 test_extract_address()
-
-# %%
-test_extract_postalcode()
-# %%
+test_extract_postal_code()
+test_extract_phone_number()
+print("Extract tests are complete!")
+#%%
