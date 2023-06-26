@@ -40,7 +40,7 @@ def clean_strs(your_strs):
         commas are NOT removed
         
         """
-        
+   
         patterns = {r"": None,
                 r"\n{1,}": "", # remove any new lines
                 r"\'|\`|\“|\”": "",  # remove apostropies
@@ -51,8 +51,7 @@ def clean_strs(your_strs):
 
                 # BEAUTIFY
                 r",{2,}": ",", 
-                r"\s{1,}\,": ",", 
-                r"\s{2,}": " ", 
+                r"\s{1,}\,": ",",  
 
                 r"É": "E",  # accent aigu
                 r"À": "A",  # accent grave
@@ -72,7 +71,8 @@ def clean_strs(your_strs):
         try:
                 upper_strs = pd.Series(your_strs).str.upper() 
                 cln_strs = upper_strs.replace(patterns, regex=True)
-                cln_strs = cln_strs.str.strip()
+                cln_strs = clean_strs.replace(r"\s{2,}", " ", regex=True) # remove any spaces more than one 
+                cln_strs = cln_strs.str.strip() # remove ws 
 
                 return cln_strs
 
@@ -99,6 +99,11 @@ def validate_attribute(attribute_list):
         
         Returns 
         list of indices not matching attribute pattern
+
+        NOTES
+        this only works AFTER extract_() is used 
+
+        it basically just gives you an indices list where the missing values are 
         
         """
 
