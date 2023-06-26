@@ -14,15 +14,15 @@ long_description = (here / "README.md").read_text(encoding="utf-8")
 
 setup(
     name="AttributeBoss",
-    version = '0.00',
+    version = '0.0.1',
     description = "This package aims to allow for quick and basic standardization, extraction, and validation of key attributes",
     long_description=long_description,
     long_description_content_type="text/markdown",
     author = "BDRUMMOND",
     author_email = "b3drumms@gmail.com",
     package_dir={"": "src"},
-    packages = find_packages(where="src", exclude=['test_']),
-    install_requires = ['pandas', 'numpy', 'regex', "pathlib", "importlib"],
-     extras_require={"test_": ["pytest"]})
+    packages = find_packages(where="src", exclude=['tests']),
+    install_requires = ['pandas', 'numpy', 'regex'],
+     extras_require={"tests": ["pytest"]})
 
 # %%
