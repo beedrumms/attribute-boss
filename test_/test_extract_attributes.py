@@ -2,7 +2,6 @@
 
 #%%
 import pytest
-import importlib.util
 
 import os
 import sys
