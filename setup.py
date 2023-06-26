@@ -20,7 +20,8 @@ setup(
     long_description_content_type="text/markdown",
     author = "BDRUMMOND",
     author_email = "b3drumms@gmail.com",
-    packages = find_packages("src", exclude=['tests_']),
+    package_dir={"": "src"},
+    packages = find_packages(where="src", exclude=['test_']),
     install_requires = ['pandas', 'numpy', 'regex', "pathlib", "importlib"],
      extras_require={"test_": ["pytest"]})
 
