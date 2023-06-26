@@ -1,0 +1,12 @@
+LICENSE
+README.md
+pyproject.toml
+setup.py
+src/AttributeBoss.egg-info/PKG-INFO
+src/AttributeBoss.egg-info/SOURCES.txt
+src/AttributeBoss.egg-info/dependency_links.txt
+src/AttributeBoss.egg-info/requires.txt
+src/AttributeBoss.egg-info/top_level.txt
+tests/test_extract_attributes.py
+tests/test_features.py
+tests/test_strandardize_attributes.py

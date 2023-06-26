@@ -23,6 +23,7 @@ setup(
     package_dir={"": "src"},
     packages = find_packages(where="src", exclude=['tests']),
     install_requires = ['pandas', 'numpy', 'regex'],
+    python_requires = '>=3.8',
      extras_require={"tests": ["pytest"]})
 
 # %%
