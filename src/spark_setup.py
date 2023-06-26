@@ -4,6 +4,7 @@ findspark.init()
 
 import pyspark
 from pyspark.sql import SparkSession
+from pyspark import SparkConf
 
 # global variable to hold the SparkSession object
 spark = None
@@ -38,11 +39,6 @@ def MySparkSession(master="local", executor_memory='2g', executor_cores="1", exe
 
             # Create a SparkSession object
             spark = SparkSession.builder.config(conf=conf).getOrCreate()
-            
-            spark = SparkSession.builder \
-                    .appName("AttributeBoss") \
-                    .master(master) \
-                    .getOrCreate()
 
             print("New SparkSession has been created --> ", conf.get("spark.app.name"), "\n", "Configs:")
             print("spark.master = ", conf.get("spark.master"))
