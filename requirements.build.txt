@@ -1,7 +1,6 @@
-pip
+build
+setuptools
 twine
-pylint
 pytest
 pytest-azurepipelines
-pytest-cov
 wheel
