@@ -1,10 +1,12 @@
 Metadata-Version: 2.1
 Name: AttributeBoss
-Version: 0.0.1
+Version: 0.0.0
 Summary: A package to prep data for more advanced preprocessing or transformations
 Author: BDRUMMOND
 Author-email: BDRUMMOND <b3drumms@gmail.com>
-License: Copyright (c) 2018 The Python Packaging Authority
+License: MIT License
+        
+        Copyright (c) 2023 The Python Packaging Authority
          
         Permission is hereby granted, free of charge, to any person obtaining a copy
         of this software and associated documentation files (the "Software"), to deal

@@ -1,0 +1,7 @@
+pip
+twine
+pylint
+pytest
+pytest-azurepipelines
+pytest-cov
+wheel

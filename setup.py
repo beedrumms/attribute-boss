@@ -1,3 +1,4 @@
+#%%
 from setuptools import setup, find_packages
 import pathlib
 ###
@@ -14,7 +15,7 @@ long_description = (here / "README.md").read_text(encoding="utf-8")
 
 setup(
     name="AttributeBoss",
-    version = '0.0.1',
+    version = '0.0.0',
     description = "This package aims to allow for quick and basic standardization, extraction, and validation of key attributes",
     long_description=long_description,
     long_description_content_type="text/markdown",
