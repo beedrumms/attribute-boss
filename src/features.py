@@ -71,7 +71,7 @@ def clean_strs(your_strs):
         try:
                 upper_strs = pd.Series(your_strs).str.upper() 
                 cln_strs = upper_strs.replace(patterns, regex=True)
-                cln_strs = clean_strs.replace(r"\s{2,}", " ", regex=True) # remove any spaces more than one 
+                cln_strs = cln_strs.replace(r"\s{2,}", " ", regex=True) # remove any spaces more than one 
                 cln_strs = cln_strs.str.strip() # remove ws 
 
                 return cln_strs
