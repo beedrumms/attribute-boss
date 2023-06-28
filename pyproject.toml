@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "AttributeBoss"
-version = "0.0.0"
+Dymamic = ["version"]
 
 dependencies = ["pandas", "numpy", "regex"]
 

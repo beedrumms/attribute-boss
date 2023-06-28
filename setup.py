@@ -8,6 +8,10 @@ here = pathlib.Path(__file__).parent.resolve()
 ###
 
 #%%
+with open('version', 'r') as f:
+    version = f.read().strip()
+
+#%%
 long_description = (here / "README.md").read_text(encoding="utf-8")
 ###
 
@@ -15,7 +19,7 @@ long_description = (here / "README.md").read_text(encoding="utf-8")
 
 setup(
     name="AttributeBoss",
-    version = '0.0.0',
+    version = version,
     description = "This package aims to allow for quick and basic standardization, extraction, and validation of key attributes",
     long_description=long_description,
     long_description_content_type="text/markdown",
