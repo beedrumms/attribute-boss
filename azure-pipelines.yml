@@ -45,7 +45,7 @@ steps:
   displayName: Update Package Version
 
 - bash: python -m build
-    displayName: Build package
+  displayName: Build package
   workingDirectory: .
 
 - task: TwineAuthenticate@1
