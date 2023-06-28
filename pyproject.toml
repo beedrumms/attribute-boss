@@ -5,24 +5,20 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "AttributeBoss"
-Dymamic = ["version"]
+requires-python = ">=3.8"
 
-dependencies = ["pandas", "numpy", "regex"]
+# dependencies = ["pandas", "numpy", "regex"]
+dynamic = ['version', 'description', 'dependencies', 'optional-dependencies']
 
-authors = [{ name="BDRUMMOND", email="b3drumms@gmail.com" },]
+authors = [{ name="BDRUMMOND", email="b3drumms@gmail.com" }]
 
-description = "A package to prep data for more advanced preprocessing or transformations"
 readme = "README.md"
-requires-python = ">=3.10"
-
 license = {file = "LICENSE"}
 
-classifiers = [
-    "Programming Language :: Python :: 3"
-]
+classifiers = ["Programming Language :: Python :: 3"]
 
-[project.optional-dependencies]
-tests = ["pytest"]
+# [project.optional-dependencies]
+# tests = ["pytest"]
 
 [project.urls]
 Home = "https://dev.azure.com/gocloudclient0099/LPA/_git/AttributeBoss"

@@ -9,4 +9,4 @@ src/AttributeBoss.egg-info/requires.txt
 src/AttributeBoss.egg-info/top_level.txt
 tests/test_extract_attributes.py
 tests/test_features.py
-tests/test_strandardize_attributes.py
+tests/test_standardize_attributes.py
