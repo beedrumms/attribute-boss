@@ -5,3 +5,4 @@ pyspark
 
 [tests]
 pytest
+pytest_spark
