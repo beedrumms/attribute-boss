@@ -36,6 +36,6 @@ setup(
     #install_requires = requirements,
     install_requires = ['pandas', 'numpy', 'regex', 'pyspark'],
     python_requires = '>=3.8',
-     extras_require={"tests": ["pytest"]})
+     extras_require={"tests": ["pytest", "pytest_spark"]})
 
 # %%
