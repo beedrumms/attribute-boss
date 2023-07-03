@@ -1,0 +1,55 @@
+# define some variables for later use
+
+variables:
+  pythonVersion: 3.10
+  artifactFeed: AttributeBossPySpark-feed
+
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- task: UsePythonVersion@0
+  displayName: Use Python $(pythonVersion)
+  inputs:
+    versionSpec: $(pythonVersion)
+
+
+- bash: python -m pip install --upgrade pip
+  displayName: Install and upgrade pip
+
+# Install some tools needed for build (pylint, twine etc)
+
+- bash: |
+    python -m pip install -r requirements.build.txt -U 
+    python -m pip install -r requirements.txt -U
+  displayName: Install packages for build
+
+- bash: |
+    cd tests 
+    python -m pytest test_features.py
+    python -m pytest test_standardize_attributes.py 
+    python -m pytest test_extract_attributes.py 
+  displayName: 'pytest'
+  
+  # Our built source dist & wheel will land in dist/
+- bash: |
+    # Read the current version number from the version file
+    version=$(cat version)
+    # Increment the patch version number (e.g. 1.0.0 -> 1.0.1)
+    new_version=$(echo $version | awk -vFS=. -vOFS=. '{$NF+=1; print $0}')
+    # Update the version file with the new version number
+    echo $new_version > version 
+  displayName: Update Package Version
+
+- bash: python -m build
+  displayName: Build package
+  workingDirectory: .
+
+- task: TwineAuthenticate@1
+  inputs:
+    artifactFeed: $(artifactFeed)
+
+- bash: python -m twine upload -r $(artifactFeed) --config-file $(PYPIRC_PATH) dist/*
