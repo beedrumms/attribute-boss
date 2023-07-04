@@ -8,14 +8,6 @@ here = pathlib.Path(__file__).parent.resolve()
 ###
 
 #%%
-#with open('version.txt', 'r') as f:
-#    version = f.read().strip()
-
-#%% NOT WORKING -- 
-#with open("requirements.txt") as f:
-#    requirements = f.read().splitlines()
-
-#%%
 long_description = (here / "README.md").read_text(encoding="utf-8")
 ###
 
@@ -23,8 +15,7 @@ long_description = (here / "README.md").read_text(encoding="utf-8")
 
 setup(
     name="AttributeBossPySpark",
-    version = "0.0.2",
-    #version = version,
+    version = "0.0.0",
     include_package_data=True,
     description = "This package aims to allow for quick and basic standardization, extraction, and validation of key attributes",
     long_description=long_description,
@@ -32,7 +23,6 @@ setup(
     author = "BDRUMMOND",
     author_email = "b3drumms@gmail.com",
     packages = find_packages(),
-    #install_requires = requirements,
     install_requires = ['pandas', 'numpy', 'regex', 'pyspark'],
     python_requires = '>=3.8',
      extras_require={"tests": ["pytest", "pytest_spark"]})
