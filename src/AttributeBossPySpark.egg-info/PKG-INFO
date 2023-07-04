@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: AttributeBossPySpark
-Version: 0.0.0
+Version: 0.0.1
 Summary: This package aims to allow for quick and basic standardization, extraction, and validation of key attributes
 Author: BDRUMMOND
 Author-email: BDRUMMOND <b3drumms@gmail.com>
