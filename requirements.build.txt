@@ -5,3 +5,5 @@ pyspark==3.4.0
 twine
 pytest
 pytest_spark
+keyring
+artifacts-keyring
