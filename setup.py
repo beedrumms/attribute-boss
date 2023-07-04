@@ -15,7 +15,7 @@ long_description = (here / "README.md").read_text(encoding="utf-8")
 
 setup(
     name="AttributeBossPySpark",
-    version = "0.0.0",
+    version = "0.0.3",
     include_package_data=True,
     description = "This package aims to allow for quick and basic standardization, extraction, and validation of key attributes",
     long_description=long_description,
