@@ -23,7 +23,7 @@ setup(
     author = "BDRUMMOND",
     author_email = "b3drumms@gmail.com",
     packages = find_packages(),
-    install_requires = ['pandas', 'numpy', 'regex', 'pyspark'],
+    install_requires = ['pandas', 'numpy', 'regex', 'pyspark==3.4.0', 'pathlib', 'py4j', 'PyJWT', 'findspark'],
     python_requires = '>=3.8',
      extras_require={"tests": ["pytest", "pytest_spark"]})
 

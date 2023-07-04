@@ -1,0 +1,12 @@
+pandas
+numpy
+regex
+pyspark==3.4.0
+pathlib
+py4j
+PyJWT
+findspark
+
+[tests]
+pytest
+pytest_spark
