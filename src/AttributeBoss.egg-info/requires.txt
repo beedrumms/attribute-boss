@@ -1,0 +1,8 @@
+pandas
+numpy
+regex
+pyspark
+
+[tests]
+pytest
+pytest_spark

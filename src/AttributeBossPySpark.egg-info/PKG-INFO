@@ -1,0 +1,32 @@
+Metadata-Version: 2.1
+Name: AttributeBossPySpark
+Version: 0.0.1
+Summary: This package aims to allow for quick and basic standardization, extraction, and validation of key attributes
+Author: BDRUMMOND
+Author-email: BDRUMMOND <b3drumms@gmail.com>
+Project-URL: Home, https://dev.azure.com/gocloudclient0099/LPA/_git/AttributeBoss?path=%2F&version=GBfeature-pyspark&_a=contents
+Classifier: Programming Language :: Python :: 3
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Provides-Extra: tests
+
+# Introduction 
+This project is supposed to help standardize attributes quickly and at a very high-level so one can perform other operations. The motivation is that most off-self libraries do to much.
+
+AttributeBoss Forever 
+
+Signing off but inevitably back on,
+B 
+
+# Getting Started
+1.	Installation process
+    - Install basic libraries in requirements - newest versions shouldnt be an issue?
+
+# Build and Test
+- run python -m setup.py build? 
+- run python -m setup.py install?
+
+- run pytest test_xxxx.py in terminal
+
+# Contribute
+- contribute freely 
