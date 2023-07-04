@@ -33,16 +33,6 @@ steps:
     python -m pytest test_standardize_attributes.py 
     python -m pytest test_extract_attributes.py 
   displayName: 'pytest'
-  
-  # Our built source dist & wheel will land in dist/
-- bash: |
-    # Read the current version number from the version file
-    version=$(cat version)
-    # Increment the patch version number (e.g. 1.0.0 -> 1.0.1)
-    new_version=$(echo $version | awk -vFS=. -vOFS=. '{$NF+=1; print $0}')
-    # Update the version file with the new version number
-    echo $new_version > version 
-  displayName: Update Package Version
 
 - bash: python -m build
   displayName: Build package
