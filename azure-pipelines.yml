@@ -44,7 +44,7 @@ steps:
     echo $new_version > version 
   displayName: Update Package Version
 
-- bash: python -m build
+- bash: python -m setup.py bdist_wheel
   displayName: Build package
   workingDirectory: .
 
