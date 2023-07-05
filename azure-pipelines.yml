@@ -34,7 +34,7 @@ steps:
     python -m pytest test_extract_attributes.py 
   displayName: 'pytest'
 
-- bash: python setup.py bdist_wheel
+- bash: python -m build
   displayName: Build package
   workingDirectory: .
 
