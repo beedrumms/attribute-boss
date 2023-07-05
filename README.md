@@ -36,13 +36,13 @@ Signing off but inevitably back on -B
 
 # How to Use
 - This library was built to quickly bring key attributes into alignment (Standardize) for further preprocessing tasks 
-- it is build around the **assumption that Pandas DataFrames are being used**
+- it is build around the **assumption that PySpark Dataframes are being used**
 - most of the functions leverage py dict structures to perform replacement tasks given that they are much more efficient than using for loops or step by step tasks
-- with this in mind, the **input for each function should be a pd.Series** unless otherwise stated
-- the output of **each function is a pd.Series**, which will make it easy to write it back to your DF
+- with this in mind, the **input for each function should be a PySpark column object** unless otherwise stated
+- the output of **each function is a PySpark column object**, which will make it easy to write it back to your DF
 - ex:
    - `standardized_attribute = standardize_address(df['my_attribute'])`
-   - `df['my_attribute] = standardized_attribute` 
+   - `df = df.withColumn('Col_Name', standardized_attribute)` 
 
 # Suggested Steps for Implementation 
 - this library was designed to be used in steps and **some functions rely on others to work properly**
