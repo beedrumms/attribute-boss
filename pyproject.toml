@@ -1,24 +1,22 @@
-[build-system]
-# Minimum requirements for the build system to execute.
-requires = ["setuptools>=67", "wheel"]  # PEP 508 specifications.
-build-backend = "setuptools.build_meta"
-
 [project]
 name = "AttributeBoss"
-requires-python = ">=3.8"
-
-# dependencies = ["pandas", "numpy", "regex"]
-dynamic = ['version', 'description', 'dependencies', 'optional-dependencies']
-
-authors = [{ name="BDRUMMOND", email="b3drumms@gmail.com" }]
-
+version = "1.0.0"
+description = "A library that does the bare minimum. 
+                Designed to do the absolute basics. 
+                Its preprocessing before preprocessing."
 readme = "README.md"
 license = {file = "LICENSE"}
-
-classifiers = ["Programming Language :: Python :: 3"]
-
-# [project.optional-dependencies]
-# tests = ["pytest"]
+requires-python = ">=3.10"
+authors = [{ name="BDRUMMOND", email="b3drumms@gmail.com" }]
+keyword = ["preprocessing", "attributes", "cleaning"]
+dependencies = ["pandas", "numpy", "regex", "py4j", "pyspark>=3.4.0"]
 
 [project.urls]
 Home = "https://dev.azure.com/gocloudclient0099/LPA/_git/AttributeBoss"
+
+[build-system]
+requires = ["setuptools>=67"] 
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where=["src"]
