@@ -1,9 +1,7 @@
 [project]
 name = "AttributeBoss"
 version = "1.0.0"
-description = "A library that does the bare minimum. 
-                Designed to do the absolute basics. 
-                Its preprocessing before preprocessing."
+description = "A library that does the bare minimum. Designed to do the absolute basics. Its preprocessing before preprocessing."
 readme = "README.md"
 license = {file = "LICENSE"}
 requires-python = ">=3.10"
