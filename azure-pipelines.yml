@@ -1,7 +1,7 @@
 # define some variables for later use
 variables:
   pythonVersion: 3.10
-  artifactFeed: ab-feed
+  artifactFeed: boss-feed
 
 trigger:
   branches:
@@ -47,7 +47,7 @@ jobs:
         echo "Version has changed. Building artifacts..."
         # Update the version file with the new version number
         echo $new_version > version 
-        python -m build
+        python -m build -n
       else
         echo "Version has not changed. Skipping artifact build."
       fi
@@ -56,7 +56,7 @@ jobs:
 
   - task: TwineAuthenticate@1
     inputs:
-      artifactFeed: ab-feed
+      artifactFeed: boss-feed
 
-  - bash: python -m twine upload -r ab-feed --config-file $(PYPIRC_PATH) dist/*.whl
+  - bash: python -m twine upload --repository-url https://pkgs.dev.azure.com/gocloudclient0099/_packaging/boss-feed/pypi/upload dist/*.whl
     displayName: Upload artifacts
