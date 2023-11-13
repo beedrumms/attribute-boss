@@ -1,17 +1,17 @@
 # Introduction 
-This project is supposed to help standardize attributes quickly and at a very high-level so one can perform other preprocessing operations. The motivation is that most off-self libraries do to much. 
+AttributeBoss performs routine standardization and extraction tasks common to data transformation preprocessing requirements. 
 
 This library can:
-   - standardize missing data (features - `missing_val_handler()`)
-   - clean any str data (features - `clean_strs()`)
-   - validate address, postal, and phone data (features - `validate_attribute()`)
-   - standardize address data by removing aligning use of prefix and suffixes and street directions (standardize_attributes - `standardize_address()`)
-   - standardize postal codes by removing common differences in representation (standardize_attributes - `standardize_postal_code()`)
-   - standardize phone numbers by removing common differences in reporesentation (standardize_attributes - `standardize_phone_number()`)
-   - standardize province and state names to abbreviated title (standardize_attributes - `standardize_province_state()`)
-   - extract an address (street number, street name, street prefix / suffix, street directions) from a complex str (extract_attributes - `extract_address()`)
-   - extract a postal code from a str (extract_attributes - `extract_postal_code()`)
-   - extract a phone number from a str (extract_attributes - `extract_phone_number()`)
+   - standardize the treatment of missing data (`missing_val_handler()`)
+   - clean any str data (`str_prep()`)
+   - validate address, postal, and phone data (`validate_attribute()`)
+   - standardize address data by removing aligning use of prefix and suffixes and street directions (`standardize_address()`)
+   - standardize postal codes by removing common differences in representation (`standardize_postal_code()`)
+   - standardize phone numbers by removing common differences in reporesentation (`standardize_phone_number()`)
+   - standardize province and state names to abbreviated title (`standardize_province_state()`)
+   - extract an address (street number, street name, street prefix / suffix, street directions) from a complex str (`extract_address()`)
+   - extract a postal code from a str (`extract_postal_code()`)
+   - extract a phone number from a str (`extract_phone_number()`)
 
 **see Suggested Steps for Implementation below for proper use**
    
