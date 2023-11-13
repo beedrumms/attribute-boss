@@ -32,9 +32,8 @@ jobs:
 
   - bash: |
       cd tests 
-      python -m pytest test_features.py
-      python -m pytest test_standardize_attributes.py 
-      python -m pytest test_extract_attributes.py 
+      python -m pytest test_PyTools.py
+      python -m pytest test_SparkTools.py
     displayName: 'pytest'
 
   - bash: |
