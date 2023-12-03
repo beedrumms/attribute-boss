@@ -1,20 +1,35 @@
+#%% 
+
+import findspark
+findspark.init()
+
+import pyspark
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import regexp_replace, regexp_extract, when, col, trim, upper
+
 import os
 import sys
 
 sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../src")
-from PyTools import *
+from SparkTools import SparkBoss
+boss = SparkBoss()
+
 
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
-from conftests_spark import FeaturesTestingData, StandardizeTestingData, ExtractTestingData
+from cfgtests_spark import MyTestingSparkSession, FeaturesTestingData, StandardizeTestingData, ExtractTestingData
 
-df_features = FeaturesTestingData()
-df_standardize = StandardizeTestingData()
-df_extract = ExtractTestingData()
+import regex as re
+#### 
+spark = MyTestingSparkSession()
+df_features = FeaturesTestingData(spark)
+df_standardize = StandardizeTestingData(spark)
+df_extract = ExtractTestingData(spark)
 
 
+#%% 
 def test_missing_val_handler(df=df_features):
 
-    test_1 = missing_val_handler(df['Nulls_actual'])
+    test_1 = boss.missing_val_handler(df['Nulls_actual'])
     
     df = df.withColumn('Nulls_actual', test_1)    
 
@@ -31,8 +46,8 @@ def test_missing_val_handler(df=df_features):
 
 def test_str_prep(df=df_features):
 
-    test_1 = clean_strs(df['Name_actual'], include_accents=True)
-    test_2 = clean_strs(df['Address_actual'])
+    test_1 = boss.str_prep(df['Name_actual'])
+    test_2 = boss.str_prep(df['Address_actual'])
     
     df = df.withColumn('Name_actual', test_1)    
     df = df.withColumn('Address_actual', test_2)    
@@ -55,7 +70,7 @@ def test_str_prep(df=df_features):
 
 def test_standardize_address(df=df_standardize):
 
-    test_1 = Stz.standardize_address(df['Address_actual'])
+    test_1 = boss.standardize_address(df['Address_actual'])
     
     df = df.withColumn('Address_actual', test_1)    
 
@@ -70,10 +85,9 @@ def test_standardize_address(df=df_standardize):
     ###
     ###
 
-#%% TEsT FUNC
 def test_standardize_postal_code(df=df_standardize):
  
-    test_1 = Stz.standardize_postal_code(df['Postal_actual'])
+    test_1 = boss.standardize_postal_code(df['Postal_actual'])
     
     df = df.withColumn('Postal_actual', test_1)    
 
@@ -87,10 +101,10 @@ def test_standardize_postal_code(df=df_standardize):
     assert actual_set == expected_set, print(message) 
     ###
 
-#%%
+
 def test_standardize_phone_number(df=df_standardize):
 
-    test_1 = Stz.standardize_phone_number(df['Phone_actual'])
+    test_1 = boss.standardize_phone_number(df['Phone_actual'])
     
     df = df.withColumn('Phone_actual', test_1)    
 
@@ -104,10 +118,10 @@ def test_standardize_phone_number(df=df_standardize):
     assert actual_set == expected_set, print(message) 
     ###
 
-#%%
+
 def test_standardize_province_state(df=df_standardize):
  
-    test_1 = Stz.standardize_province_state(df['Prov_actual'])
+    test_1 = boss.standardize_province_state(df['Prov_actual'])
     
     df = df.withColumn('Prov_actual', test_1)    
 
@@ -124,7 +138,7 @@ def test_standardize_province_state(df=df_standardize):
 
 def test_extract_address(df=df_extract):
 
-    test_1 = Extract.extract_address(df['actual'])
+    test_1 = boss.extract_address(df['actual'])
     
     df = df.withColumn('Address_actual', test_1)    
 
@@ -139,10 +153,10 @@ def test_extract_address(df=df_extract):
     ###
     ###
 
-#%%
+
 def test_extract_postal_code(df=df_extract):
 
-    test_1 = Extract.extract_postal_code(df['actual'])
+    test_1 = boss.extract_postal_code(df['actual'])
     
     df = df.withColumn('Postal_actual', test_1)    
 
@@ -156,10 +170,10 @@ def test_extract_postal_code(df=df_extract):
     assert actual_set == expected_set, print(message) # for special formatting to work, message must be printed not just returned
     ###
 
-#%%
+
 def test_extract_phone_number(df=df_extract):
 
-    test_1 = Extract.extract_phone_number(df['actual'])
+    test_1 = boss.extract_phone_number(df['actual'])
     
     df = df.withColumn('Phone_actual', test_1)    
 
@@ -173,6 +187,8 @@ def test_extract_phone_number(df=df_extract):
     assert actual_set == expected_set, print(message) # for special formatting to work, message must be printed not just returned
     ###
 
+
+#%% 
 test_missing_val_handler()
 test_str_prep()
 print("Features tests are complete")
@@ -186,6 +202,7 @@ print("Standardized tests complete!")
 test_extract_address()
 test_extract_postal_code()
 test_extract_phone_number()
+
 print("Extract tests are complete")
 
 print("tests are all complete")

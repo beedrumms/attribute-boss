@@ -15,11 +15,108 @@ import regex as re
 class PyBoss:
         
         def __init__(self):
+                self.name = self
                 
                 print("AttributeBoss is Ready")
 
-        @safety_switch([pd.Series])
-        def missing_val_handler(attribute):
+        @safety_switch([list, pd.Series])
+        def tidy_str(self, attribute, 
+                text_case='title', 
+                stop_words=True, 
+                periods=True, 
+                hyphen=True, 
+                comma=True, 
+                symbols=True, 
+                brackets=True,
+                digits=True,
+                apostrophies=True, 
+                phone_nums=True,
+                french_accents=True,
+                remove=None,
+                adjust=None):
+
+
+                # cln_strs = attribute.cast("string")
+                cln_strs = [i.upper() for i in attribute]
+        
+                
+                if apostrophies: 
+                        cln_strs = re.sub(r'\`|\“|\”|\"', '', cln_strs) 
+                        cln_strs = re.sub(r"'(?!S)", '', cln_strs) 
+
+                if periods: 
+                        cln_strs = re.sub(r'\.', ' ', cln_strs) 
+                else:
+                        cln_strs = re.sub(r'\.', '\. ', cln_strs) 
+
+                if symbols: 
+                        cln_strs = re.sub(r"[\@\,\=\?\*\&\#\:\;\/\+\\\~\|]", ' ', cln_strs) # remove useless punctuation and symbols
+
+                if brackets:
+                        cln_strs = re.sub(r"\([A-Z0-9\s-]{1,}\)", ' ', cln_strs) # remove everything in brackets 
+                        cln_strs = re.sub(r"\(\)|\(|\)", " ", cln_strs) # left over brackets
+                
+                if phone_nums:
+                        cln_strs = re.sub(r"[0-9]{1,}(\-|\.|\s|X|EXT|EXT\.)?[0-9]{1,}(\-|\.|\s|X|EXT|EXT\.)?", ' ', cln_strs) # remove all phone numbers
+
+                if digits:
+                        cln_strs = re.sub(r"\d{1,}", " ", cln_strs) # all digits
+
+                # STOP WORDS 
+                if stop_words:
+                        cln_strs = re.sub(r"\bON\b|\bIN\b|\bFROM\b|\bFOR\b|\bTO\b|\bAT\b|\bBE\b|\bOF\b|\bTHE\b|\bAS\b|\bPER\b", " ", cln_strs)
+
+                if hyphen:
+                        cln_strs = re.sub(r'-', '', cln_strs) # remove hyphens AFTER doc term extraction
+
+                else:
+                        cln_strs = re.sub(r'-{2,}', '-', cln_strs) # remove multiple hyphens and replace with one
+                        cln_strs = re.sub(r"\s{1,}\-\s{1,}|\s{1,}\-|\-\s{1,}", ' - ', cln_strs) # format hyphenated spaces
+
+                if remove != None:
+                        cln_strs = re.sub(remove, " ", cln_strs)
+                
+                if adjust != None:
+                        cln_strs = re.sub(adjust[0], adjust[1], cln_strs)
+                
+                if french_accents: 
+                        cln_strs = re.sub( r"É", "E") # accent aigu
+                        cln_strs = re.sub( r"À", "A") # accent grave
+                        cln_strs = re.sub( r"È", "E")
+                        cln_strs = re.sub( r"Ù", "U")
+                        cln_strs = re.sub( r"Â", "A") # Cironflexe
+                        cln_strs = re.sub( r"Ê", "E")
+                        cln_strs = re.sub( r"Î", "I")
+                        cln_strs = re.sub( r"Ô", "O")
+                        cln_strs = re.sub( r"Û", "U")
+                        cln_strs = re.sub( r"Ë", "E") # Trema
+                        cln_strs = re.sub( r"Ï", "I") 
+                        cln_strs = re.sub( r"Ü", "U") 
+                        cln_strs = re.sub( r"Ç", "C") 
+                
+                if text_case == 'lower':
+                        cln_strs = lower(cln_strs)
+
+                elif text_case == 'title':
+                        cln_strs = initcap(cln_strs)
+                
+                elif text_case == 'upper':
+                        pass
+
+                else: 
+                        print('No "upper", "lower", or "title" given (or incorrect input) -- defaulting to titlecase')
+                
+
+                # BEAUTIFY
+                cln_strs = re.sub( r'\n{1,}', '') # remove any new lines
+                cln_strs = re.sub( r"\s{2,}", " ") # remove wierd spacing
+                cln_strs = re.sub( r'[^\x00-\x7F]+', '') # remove any non-ascii characters LAST
+                cln_strs = trim(cln_strs) # finalize standardization
+                
+                return cln_strs
+
+        @safety_switch([list, pd.Series])
+        def missing_val_handler(self, attribute):
                 
                 """
                 replaces every missing value ("", None, or np.nan) or value labeled missing (NA, NONE, or NAN) to None value type 
@@ -31,12 +128,14 @@ class PyBoss:
                 a pd.Series of your attribute with missing values standarized as None 
                 
                 """
-                return attribute.replace({"NA":None, "Na":None, "nA":None, "na":None,
+                
+                return pd.Series(attribute).replace({"NA":None, "Na":None, "nA":None, "na":None,
                                                   '':None, np.nan:None, 
                                                   "NONE":None, "none":None, "None":None, 
                                                   "NAN":None, "NaN":None, "nan":None})
-        @safety_switch([pd.Series])
-        def str_prep(attribute):
+        
+        @safety_switch([list, pd.Series])
+        def str_prep(self, attribute):
                 
                 """
                 Converts str to upper,  removes any double+ spaces, hyphens non-ASCII characters, apostrophes, periods, parenthesis, replaces french accents, strips trailing ws
@@ -83,14 +182,14 @@ class PyBoss:
 
                 r"[^\x00-\x7F]+": ""}  # remove any non-ascii characters
                 
-                upper_strs = attribute.str.upper() 
+                upper_strs = pd.Series(attribute).str.upper() 
                 cln_strs = upper_strs.replace(patterns, regex=True)
                 cln_strs = cln_strs.replace(r"\s{2,}", " ", regex=True) # remove any spaces more than one 
                 cln_strs = cln_strs.str.strip() # remove ws 
 
                 return cln_strs
 
-        @safety_switch([pd.Series])
+        @safety_switch([list, pd.Series])
         def standardize_address(self, attribute):
 
                 """
@@ -326,12 +425,12 @@ class PyBoss:
                         r"\b(WL|WELL)\b": "WL",
                         r"\bWELLS\b": "WLS"}
                         
-                cln = str_prep(attribute)
+                cln = self.str_prep(attribute)
                 stz_addresses = cln.replace(ixes, regex=True)
 
                 return stz_addresses
 
-        @safety_switch([pd.Series])
+        @safety_switch([list, pd.Series])
         def standardize_postal_code(self, attribute):
                 
                 """
@@ -351,7 +450,7 @@ class PyBoss:
                 
                 return codes
 
-        @safety_switch([pd.Series])
+        @safety_switch([list, pd.Series])
         def standardize_phone_number(self, attribute):
                 
                 """
@@ -370,7 +469,7 @@ class PyBoss:
 
                 return num
 
-        @safety_switch([pd.Series])
+        @safety_switch([list, pd.Series])
         def standardize_province_state(self, attribute):
                 """
                 Reconcile and convert province, state, or territory titles to abbreviated version
@@ -461,12 +560,12 @@ class PyBoss:
                                 r"\bSASKATCHEWAN\b": "SK", 
                                 r"\bYUKON\b": "YT"} 
 
-                cln = clean_strs(province_state)
+                cln = self.str_prep(attribute)
                 prov_state = pd.Series(cln).replace(patterns, regex=True)        
 
                 return prov_state
 
-        @safety_switch([pd.Series])
+        @safety_switch([list, pd.Series])
         def extract_address(self, attribute):
                 
                 """
@@ -498,7 +597,7 @@ class PyBoss:
                 
                 return cln_addy
 
-        @safety_switch([pd.Series])
+        @safety_switch([list, pd.Series])
         def extract_postal_code(self, attribute):
 
                 """
@@ -523,7 +622,7 @@ class PyBoss:
 
                 return pattern_matches
 
-        @safety_switch([pd.Series])
+        @safety_switch([list, pd.Series])
         def extract_phone_number(self, attribute):
                 """
                 Looks for Canadian and US postal codes / zips

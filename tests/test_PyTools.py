@@ -10,19 +10,21 @@ import os
 import sys
 
 sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../src")
-from PyTools import *
+from PyTools import PyBoss # as boss
+boss = PyBoss()
 
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
-from conftests_py import FeaturesTestingData, StandardizeTestingData, ExtractTestingData
+from cfgtests_py import FeaturesTestingData, StandardizeTestingData, ExtractTestingData
 
 df_features = FeaturesTestingData()
 df_standardize = StandardizeTestingData()
 df_extract = ExtractTestingData()
 
 
+#%%
 def test_missing_val_handler(df=df_features):
 
-    test_1 = missing_val_handler(df['Nulls_actual'])
+    test_1 = boss.missing_val_handler(df['Nulls_actual'])
 
     actual_set =  set(test_1 )
     expected_set = set(df['Nulls_expected'])
@@ -37,8 +39,8 @@ def test_missing_val_handler(df=df_features):
 def test_str_prep(df=df_features):
 
     # TESTING FUNCTIONS OUTCOME ACCURACY
-    test_1 = clean_strs(df['Name_actual'])
-    test_2 = clean_strs(df['Address_actual'])
+    test_1 = boss.str_prep(df['Name_actual'])
+    test_2 = boss.str_prep(df['Address_actual'])
 
     actual_set_test_1 =  set(test_1)
     expected_set_test_1 = set(df['Name_expected'])
@@ -53,7 +55,7 @@ def test_str_prep(df=df_features):
     assert actual_set_test_2 == expected_set_test_2, print(message_2) 
 
     # TESTING DATA STUCTURE INPUT 
-    test_3 = clean_strs(['  i hope this . works!'])
+    test_3 = boss.str_prep(['  i hope this . works!'])
     expected_3 = pd.Series('I HOPE THIS WORKS!')
 
     message_3 = ("\nclean_strs(list_test) RETURNED: \n{0}\n INSTEAD OF: \n{1}\n".format(test_3, expected_3))
@@ -64,7 +66,7 @@ def test_str_prep(df=df_features):
 
 def test_standardize_address(df=df_standardize):
     
-    test_1 = Stz.standardize_address(df['Address_actual'])
+    test_1 = boss.standardize_address(df['Address_actual'])
 
     actual_set =  set(test_1)
     expected_set = set(df['Address_expected'])
@@ -77,7 +79,7 @@ def test_standardize_address(df=df_standardize):
 
 def test_standardize_postal_code(df=df_standardize):
 
-    test_1 = Stz.standardize_postal_code(df['Postal_actual'])
+    test_1 = boss.standardize_postal_code(df['Postal_actual'])
     
     actual_set =  set(test_1)
     expected_set = set(df['Postal_expected'])
@@ -90,7 +92,7 @@ def test_standardize_postal_code(df=df_standardize):
 
 def test_standardize_phone_number(df=df_standardize):
 
-    test_1 = Stz.standardize_phone_number(df['Phone_actual'])
+    test_1 = boss.standardize_phone_number(df['Phone_actual'])
 
     actual_set =  set(test_1)
     expected_set = set(df['Phone_expected'])
@@ -103,7 +105,7 @@ def test_standardize_phone_number(df=df_standardize):
 
 def test_standardize_province_state(df=df_standardize):
 
-    test_1 = Stz.standardize_province_state(df['Prov_actual'])
+    test_1 = boss.standardize_province_state(df['Prov_actual'])
 
     actual_set =  set(test_1)
     expected_set = set(df['Prov_expected'])
@@ -116,7 +118,7 @@ def test_standardize_province_state(df=df_standardize):
 
 def test_extract_address(df=df_extract):
 
-    test_1 = Extract.extract_address(df['actual'])
+    test_1 = boss.extract_address(df['actual'])
 
     actual_set =  set(test_1)
     expected_set = set(df['Address_expected'])
@@ -126,10 +128,10 @@ def test_extract_address(df=df_extract):
     assert actual_set == expected_set, print(message) # for special formatting to work, message must be printed not just returned
     ###
 
-#%%
+
 def test_extract_postal_code(df=df_extract):
 
-    test_1 = Extract.extract_postal_code(df['actual'])
+    test_1 = boss.extract_postal_code(df['actual'])
     
     actual_set =  set(test_1)
     expected_set = set(df['Postal_expected'])
@@ -142,7 +144,7 @@ def test_extract_postal_code(df=df_extract):
 
 def test_extract_phone_number(df=df_extract):
 
-    test_1 = Extract.extract_phone_number(df['actual'])
+    test_1 = boss.extract_phone_number(df['actual'])
 
     actual_set =  set(test_1)
     expected_set = set(df['Phone_expected'])
@@ -152,6 +154,7 @@ def test_extract_phone_number(df=df_extract):
     assert actual_set == expected_set, print(message) # for special formatting to work, message must be printed not just returned
     ###
 
+#%% 
 
 test_missing_val_handler()
 test_str_prep()

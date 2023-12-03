@@ -8,11 +8,13 @@ import pyspark
 from pyspark.sql.functions import regexp_replace, regexp_extract, when, col, trim, upper
 ###
 
+import regex as re
+
 # %%
 class SparkBoss:
         
         def __init__(self):
-
+                self.name = self
                 print("AttributeBoss is Ready")
                 
         
@@ -38,70 +40,70 @@ class SparkBoss:
         
                 
                 if apostrophies: 
-                cln_strs = regexp_replace(cln_strs, r'\`|\“|\”|\"', '') 
-                cln_strs = regexp_replace(cln_strs, r"'(?!S)", '') 
+                        cln_strs = regexp_replace(cln_strs, r'\`|\“|\”|\"', '') 
+                        cln_strs = regexp_replace(cln_strs, r"'(?!S)", '') 
 
                 if periods: 
-                cln_strs = regexp_replace(cln_strs, r'\.', ' ') 
+                        cln_strs = regexp_replace(cln_strs, r'\.', ' ') 
                 else:
-                cln_strs = regexp_replace(cln_strs, r'\.', '\. ') 
+                        cln_strs = regexp_replace(cln_strs, r'\.', '\. ') 
 
                 if symbols: 
-                cln_strs = regexp_replace(cln_strs, r"[\@\,\=\?\*\&\#\:\;\/\+\\]", ' ') # remove useless punctuation and symbols
+                        cln_strs = regexp_replace(cln_strs, r"[\@\,\=\?\*\&\#\:\;\/\+\\\~]", ' ') # remove useless punctuation and symbols
 
                 if brackets:
-                cln_strs = regexp_replace(cln_strs, r"\([A-Z0-9\s-]{1,}\)", ' ') # remove everything in brackets 
-                cln_strs = regexp_replace(cln_strs, r"\(\)|\(|\)", " ") # left over brackets
+                        cln_strs = regexp_replace(cln_strs, r"\([A-Z0-9\s-]{1,}\)", ' ') # remove everything in brackets 
+                        cln_strs = regexp_replace(cln_strs, r"\(\)|\(|\)", " ") # left over brackets
                 
                 if phone_nums:
-                cln_strs = regexp_replace(cln_strs, r"[0-9]{1,}(\-|\.|\s|X|EXT|EXT\.)?[0-9]{1,}(\-|\.|\s|X|EXT|EXT\.)?", ' ') # remove all phone numbers
+                        cln_strs = regexp_replace(cln_strs, r"[0-9]{1,}(\-|\.|\s|X|EXT|EXT\.)?[0-9]{1,}(\-|\.|\s|X|EXT|EXT\.)?", ' ') # remove all phone numbers
 
                 if digits:
-                cln_strs = regexp_replace(cln_strs, r"\d{1,}", " ") # all digits
+                        cln_strs = regexp_replace(cln_strs, r"\d{1,}", " ") # all digits
 
                 # STOP WORDS 
                 if stop_words:
-                cln_strs = regexp_replace(cln_strs, r"\bON\b|\bIN\b|\bFROM\b|\bFOR\b|\bTO\b|\bAT\b|\bBE\b|\bOF\b|\bTHE\b|\bAS\b|\bPER\b", " ")
+                        cln_strs = regexp_replace(cln_strs, r"\bON\b|\bIN\b|\bFROM\b|\bFOR\b|\bTO\b|\bAT\b|\bBE\b|\bOF\b|\bTHE\b|\bAS\b|\bPER\b", " ")
 
                 if hyphen:
-                cln_strs = regexp_replace(cln_strs, r'-', '') # remove hyphens AFTER doc term extraction
+                        cln_strs = regexp_replace(cln_strs, r'-', '') # remove hyphens AFTER doc term extraction
 
                 else:
-                cln_strs = regexp_replace(cln_strs, r'-{2,}', '-') # remove multiple hyphens and replace with one
-                cln_strs = regexp_replace(cln_strs, r"\s{1,}\-\s{1,}|\s{1,}\-|\-\s{1,}", ' - ') # format hyphenated spaces
+                        cln_strs = regexp_replace(cln_strs, r'-{2,}', '-') # remove multiple hyphens and replace with one
+                        cln_strs = regexp_replace(cln_strs, r"\s{1,}\-\s{1,}|\s{1,}\-|\-\s{1,}", ' - ') # format hyphenated spaces
 
                 if remove != None:
-                cln_strs = regexp_replace(cln_strs, remove, " ")
+                        cln_strs = regexp_replace(cln_strs, remove, " ")
                 
                 if adjust != None:
-                cln_strs = regexp_replace(cln_strs, adjust[0], adjust[1])
+                        cln_strs = regexp_replace(cln_strs, adjust[0], adjust[1])
                 
                 if french_accents: 
-                cln_strs = regexp_replace(cln_strs, r"É", "E") # accent aigu
-                cln_strs = regexp_replace(cln_strs, r"À", "A") # accent grave
-                cln_strs = regexp_replace(cln_strs, r"È", "E")
-                cln_strs = regexp_replace(cln_strs, r"Ù", "U")
-                cln_strs = regexp_replace(cln_strs, r"Â", "A") # Cironflexe
-                cln_strs = regexp_replace(cln_strs, r"Ê", "E")
-                cln_strs = regexp_replace(cln_strs, r"Î", "I")
-                cln_strs = regexp_replace(cln_strs, r"Ô", "O")
-                cln_strs = regexp_replace(cln_strs, r"Û", "U")
-                cln_strs = regexp_replace(cln_strs, r"Ë", "E") # Trema
-                cln_strs = regexp_replace(cln_strs, r"Ï", "I") 
-                cln_strs = regexp_replace(cln_strs, r"Ü", "U") 
-                cln_strs = regexp_replace(cln_strs, r"Ç", "C") 
-                
+                        cln_strs = regexp_replace(cln_strs, r"É", "E") # accent aigu
+                        cln_strs = regexp_replace(cln_strs, r"À", "A") # accent grave
+                        cln_strs = regexp_replace(cln_strs, r"È", "E")
+                        cln_strs = regexp_replace(cln_strs, r"Ù", "U")
+                        cln_strs = regexp_replace(cln_strs, r"Â", "A") # Cironflexe
+                        cln_strs = regexp_replace(cln_strs, r"Ê", "E")
+                        cln_strs = regexp_replace(cln_strs, r"Î", "I")
+                        cln_strs = regexp_replace(cln_strs, r"Ô", "O")
+                        cln_strs = regexp_replace(cln_strs, r"Û", "U")
+                        cln_strs = regexp_replace(cln_strs, r"Ë", "E") # Trema
+                        cln_strs = regexp_replace(cln_strs, r"Ï", "I") 
+                        cln_strs = regexp_replace(cln_strs, r"Ü", "U") 
+                        cln_strs = regexp_replace(cln_strs, r"Ç", "C") 
+                        
                 if text_case == 'lower':
-                cln_strs = lower(cln_strs)
+                        cln_strs = lower(cln_strs)
 
                 elif text_case == 'title':
-                cln_strs = initcap(cln_strs)
+                        cln_strs = initcap(cln_strs)
                 
                 elif text_case == 'upper':
-                pass
+                        pass
 
                 else: 
-                print('No "upper", "lower", or "title" given (or incorrect input) -- defaulting to titlecase')
+                        print('No "upper", "lower", or "title" given (or incorrect input) -- defaulting to titlecase')
                 
 
                 # BEAUTIFY
@@ -131,7 +133,7 @@ class SparkBoss:
                 
                 """
 
-                missing_vals_standardized = when(attribute.isin(["NA", "Na", "nA", "na", "", np.nan, "NONE", "none", "None", "NAN", "NaN", "nan"]), None).otherwise(attribute)
+                missing_vals_standardized = when(attribute.isin(["NA", "Na", "nA", "na", "", "NONE", "none", "None", "NAN", "NaN", "nan"]), None).otherwise(attribute)
 
                 return missing_vals_standardized
 
@@ -204,7 +206,7 @@ class SparkBoss:
 
                 """
                 
-                address = str_prep(attribute)
+                address = self.str_prep(attribute)
 
                 ## ENGLISH
                 address = regexp_replace(address, r'\bNORTH\s?EAST\b', 'NE')
@@ -468,13 +470,13 @@ class SparkBoss:
                 To use function: `df = df.withColumn(col_name, standardize_phone_number(attribute))`
                 
                 """
-                        num = attribute.cast("string")
-                        num = regexp_replace(num, r"\.|-|_", "")
-                        num = regexp_replace(num, r"\(|\)", "")
-                        num = regexp_replace(num, r"\s{1,}|\n{1,}", "")
-                        num = trim(num)
+                num = attribute.cast("string")
+                num = regexp_replace(num, r"\.|-|_", "")
+                num = regexp_replace(num, r"\(|\)", "")
+                num = regexp_replace(num, r"\s{1,}|\n{1,}", "")
+                num = trim(num)
 
-                        return num
+                return num
 
 
         @safety_switch([pyspark.sql.column.Column])
@@ -492,7 +494,7 @@ class SparkBoss:
                 To use function: `df = df.withColumn(col_name, standardize_province_state(attribute))`
                 
                 """
-                prov_state = clean_strs(attribute)
+                prov_state = self.str_prep(attribute)
 
                 prov_state = regexp_replace(prov_state, r"\bALABAMA\b", "AL")
                 prov_state = regexp_replace(prov_state, r"\bALASKA\b", "AK")

@@ -1,7 +1,0 @@
-build
-setuptools
-setuptools-scm
-twine
-pytest
-pytest-azurepipelines
-wheel

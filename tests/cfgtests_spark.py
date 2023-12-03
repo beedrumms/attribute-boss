@@ -9,7 +9,7 @@ findspark.init()
 
 import pyspark
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import regexp_replace, regexp_extract, when, col, trim, upper
+from pyspark.sql.functions import regexp_replace, regexp_extract, when, col, trim, upper, split, from_unixtime, unix_timestamp, concat, lit, current_date, datediff, floor, countDistinct, coalesce, explode, concat_ws, lit, initcap
 
 spark_testing_session = None
 ###
@@ -52,7 +52,7 @@ def MyTestingSparkSession():
 
 #%% 
 # @pytest.fixture(scope="module")
-def FeaturesTestingData(TestingSparkSession=MyTestingSparkSession): 
+def FeaturesTestingData(spark): 
 
     test_data = [("", "Aycan", "401 Smyth Rd, Children's Hospital of Eastern Ontario (CHEO)",
     None, "AYCAN", "401 SMYTH RD, CHILDRENS HOSPITAL OF EASTERN ONTARIO CHEO"),
@@ -87,7 +87,7 @@ def FeaturesTestingData(TestingSparkSession=MyTestingSparkSession):
     ("YAY", "Reyes¢", "Ste 300-301, 40 Holly Street",
     "YAY", "REYES", "STE 300 301, 40 HOLLY STREET")] 
 
-    df = TestingSparkSession().createDataFrame(test_data, ["Nulls_actual", "Name_actual", "Address_actual", "Nulls_expected",  "Name_expected", "Address_expected"])
+    df = spark.createDataFrame(test_data, ["Nulls_actual", "Name_actual", "Address_actual", "Nulls_expected",  "Name_expected", "Address_expected"])
 
     print(type(df), " test data created")
     
@@ -95,7 +95,7 @@ def FeaturesTestingData(TestingSparkSession=MyTestingSparkSession):
 
 ###
 #%%
-def StandardizeTestingData(TestingSparkSession=MyTestingSparkSession): 
+def StandardizeTestingData(spark): 
     
     test_data = [("401 Smyth Road, Children's Hospital of Eastern Ontario (CHEO)",
     "401 SMYTH RD, CHILDRENS HOSPITAL OF EASTERN ONTARIO CHEO",
@@ -205,14 +205,14 @@ def StandardizeTestingData(TestingSparkSession=MyTestingSparkSession):
     "NORTHWEST TERRITORIES",
     "NT")] 
 
-    df = TestingSparkSession().createDataFrame(test_data, ["Address_actual", "Address_expected", "Postal_actual", "Postal_expected", "Phone_actual", "Phone_expected", "Prov_actual", "Prov_expected"])
+    df = spark.createDataFrame(test_data, ["Address_actual", "Address_expected", "Postal_actual", "Postal_expected", "Phone_actual", "Phone_expected", "Prov_actual", "Prov_expected"])
 
     print(type(df), " test data created")
     
     return df 
 
 # %%
-def ExtractTestingData(TestingSparkSession=MyTestingSparkSession): 
+def ExtractTestingData(spark): 
     
     test_data = [("401 SMYTH RD, CHILDRENS HOSPITAL OF EASTERN ONTARIO CHEO M4B2J8 9053020123",
     "401 SMYTH RD",
@@ -274,7 +274,7 @@ def ExtractTestingData(TestingSparkSession=MyTestingSparkSession):
     "M5R2P3",
     "4321230194")] 
 
-    df = TestingSparkSession().createDataFrame(test_data, ["actual", "Address_expected", "Postal_expected", "Phone_expected"])
+    df = spark.createDataFrame(test_data, ["actual", "Address_expected", "Postal_expected", "Phone_expected"])
 
     print(type(df), " test data created")
     
