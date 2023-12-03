@@ -1,5 +1,4 @@
 import pytest
-import pytest_spark
 
 import pandas as pd
 import numpy as np
