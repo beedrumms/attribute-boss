@@ -30,7 +30,7 @@ steps:
       # workingDirectory: .
 
 - bash: |
-    py -m build
+    python -m build
   displayName: 'Building AttributeBoss'
   # workingDirectory: .
 
