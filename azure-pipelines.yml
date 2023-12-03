@@ -9,8 +9,13 @@ steps:
 
 - bash: |
     python -m pip install --upgrade pip
-    python -m pip install build twine setuptools wheel find_packages
-    python -m pip install findspark pytest
+    python -m pip install build 
+    python -m pip install twine 
+    python -m pip install setuptools 
+    python -m pip install wheel 
+    python -m pip install find_packages
+    python -m pip install findspark 
+    python -m pip install pytest
   displayName: 'Install and upgrade pip setuptools and wheel'
 
 - bash: |
@@ -36,5 +41,5 @@ steps:
 
 # --config-file $(PYPIRC_PATH) dist/*.whl 
 - bash: |
-    twine upload -r BossFeed dist/* 
+    twine upload -r BossFeed dist/*.whl 
   displayName: 'Upload to feed'
