@@ -9,7 +9,7 @@ steps:
 
 - bash: |
     python -m pip install --upgrade pip
-    python -m pip install build twine setuptools wheel
+    python -m pip install build twine setuptools wheel find_packages
     python -m pip install findspark pytest
   displayName: 'Install and upgrade pip setuptools and wheel'
 
@@ -25,7 +25,7 @@ steps:
       # workingDirectory: .
 
 - bash: |
-    python setup.py sdist bdist_wheel
+    python -m build --wheel
   displayName: 'Building AttributeBoss'
   # workingDirectory: .
 
@@ -34,6 +34,7 @@ steps:
     artifactFeed: BossFeed # For an organization-scoped feed, artifactFeed: <FEED_NAME>
   displayName: 'Twine Authenticate'
 
+# --config-file $(PYPIRC_PATH) dist/*.whl 
 - bash: |
-    python -m twine upload -r BossFeed --config-file $(PYPIRC_PATH) dist/*.whl
+    twine upload -r BossFeed dist/* 
   displayName: 'Upload to feed'
