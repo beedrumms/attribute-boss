@@ -9,10 +9,10 @@ steps:
 
 - bash: |
     python -m pip install --upgrade pip
-    python -m pip install build 
-    python -m pip install twine 
-    python -m pip install setuptools 
-    python -m pip install wheel 
+    python -m pip install --upgrade build 
+    python -m pip install --upgrade twine 
+    python -m pip install --upgrade setuptools 
+    python -m pip install --upgrade wheel 
     python -m pip install find_packages
     python -m pip install findspark 
     python -m pip install pytest
@@ -30,7 +30,7 @@ steps:
       # workingDirectory: .
 
 - bash: |
-    python -m build --wheel
+    py -m build
   displayName: 'Building AttributeBoss'
   # workingDirectory: .
 
@@ -41,5 +41,5 @@ steps:
 
 # 
 - bash: |
-    twine upload -r BossFeed --config-file $(PYPIRC_PATH) dist/*.whl 
+    twine upload -r BossFeed --config-file $(PYPIRC_PATH) dist/* 
   displayName: 'Upload to feed'

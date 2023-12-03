@@ -2,7 +2,7 @@ import os
 import sys
 
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
-from utils import safety_switch
+from .utils import safety_switch
 
 import pyspark
 from pyspark.sql.functions import regexp_replace, regexp_extract, when, col, trim, upper

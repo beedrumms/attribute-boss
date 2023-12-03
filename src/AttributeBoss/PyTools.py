@@ -4,7 +4,7 @@ import os
 import sys
 
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
-from utils import safety_switch 
+from .utils import safety_switch 
 
 import pandas as pd
 import numpy as np
