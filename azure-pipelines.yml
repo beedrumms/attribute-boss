@@ -39,7 +39,7 @@ steps:
     artifactFeed: BossFeed # For an organization-scoped feed, artifactFeed: <FEED_NAME>
   displayName: 'Twine Authenticate'
 
-# --config-file $(PYPIRC_PATH) dist/*.whl 
+# 
 - bash: |
-    twine upload -r BossFeed dist/*.whl 
+    twine upload -r BossFeed --config-file $(PYPIRC_PATH) dist/*.whl 
   displayName: 'Upload to feed'
