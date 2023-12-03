@@ -10,7 +10,7 @@ steps:
 - bash: |
     python -m pip install --upgrade pip
     python -m pip install build twine setuptools wheel
-    python -m pip install pytest
+    python -m pip install findspark pytest
   displayName: 'Install and upgrade pip setuptools and wheel'
 
 - bash: |
