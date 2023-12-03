@@ -11,7 +11,7 @@ import os
 import sys
 
 sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../src")
-from SparkTools import SparkBoss
+from AttributeBoss.SparkTools import SparkBoss
 boss = SparkBoss()
 
 
