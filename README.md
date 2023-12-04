@@ -1,5 +1,5 @@
 <p align="center">
-<img src="https://github.com/beedrumms/attribute-boss/tree/af487a98743d16898b4906f600fd1f4d59829383/assets/ab.png" alt="AttributeBoss Logo" height="150px">
+<img src="https://github.com/beedrumms/attribute-boss/blob/bc755f2f95494ea0df7fe2ddf89be0140df8bf9d/assets/ab.png" alt="AttributeBoss Logo" height="150px">
 </p>
 
 # Routine Data Standardization
